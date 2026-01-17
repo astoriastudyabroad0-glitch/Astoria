@@ -87,9 +87,9 @@ const Home = () => {
 
     const testimonials = [
         {
-            name: 'Sarah Ahmed',
-            country: 'Canada',
-            text: 'Astoria made my dream of studying in Canada a reality. Their support was invaluable!',
+            name: 'Rafiul Karim Nirjhor',
+            country: 'Australia',
+            text: 'Astoria made my dream of studying in Australia a reality. Their support was invaluable!',
             rating: 5,
         },
         {
