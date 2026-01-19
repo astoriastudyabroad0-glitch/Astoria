@@ -96,8 +96,8 @@ const Contact = () => {
         {
             icon: MapPin,
             title: 'Address',
-            content: 'Wasa Rd, Ahmednogor, Rajshahi, Bangladesh',
-            link: null,
+            content: 'Airport Rd, Ahmednogor 6203',
+            link: 'https://www.google.com/maps/search/?api=1&query=24.387602,88.607993',
         },
         {
             icon: Instagram,
@@ -297,14 +297,13 @@ const Contact = () => {
                                     Our Location
                                 </h3>
                                 <p className="text-gray-700 mb-4">
-                                    Wasa Rd, Ahmednogor<br />
-                                    Rajshahi, Bangladesh
+                                    Airport Rd, Ahmednogor 6203
                                 </p>
                                 <p className="text-sm text-gray-600 mb-6">
                                     Google Maps integration can be added here
                                 </p>
                                 <a
-                                    href="https://www.google.com/maps/search/?api=1&query=Wasa+Rd+Ahmednogor+Rajshahi+Bangladesh"
+                                    href="https://www.google.com/maps/search/?api=1&query=24.387602,88.607993"
                                     target="_blank"
                                     rel="noopener noreferrer"
                                     className="inline-block"
@@ -328,12 +327,8 @@ const Contact = () => {
                     <div className="bg-white rounded-xl p-8 shadow-md">
                         <div className="space-y-3 text-lg">
                             <div className="flex justify-between">
-                                <span className="font-medium text-gray-700">Saturday - Thursday:</span>
-                                <span className="text-gray-600">9:00 AM - 6:00 PM</span>
-                            </div>
-                            <div className="flex justify-between">
-                                <span className="font-medium text-gray-700">Friday:</span>
-                                <span className="text-gray-600">Closed</span>
+                                <span className="font-medium text-gray-700">Open Hours:</span>
+                                <span className="text-gray-600">10am to 8pm</span>
                             </div>
                         </div>
                         <p className="text-sm text-gray-600 mt-6">

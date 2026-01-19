@@ -1,6 +1,6 @@
 import React from 'react';
 import { Link } from 'react-router-dom';
-import { Facebook, Instagram, Mail, Phone, MapPin } from 'lucide-react';
+import { Facebook, Instagram, Mail, Phone, MapPin, Clock } from 'lucide-react';
 import logo from '../assets/logo.png';
 
 const Footer = () => {
@@ -86,8 +86,19 @@ const Footer = () => {
                             </li>
                             <li className="flex items-start space-x-2">
                                 <MapPin className="w-5 h-5 text-primary-red flex-shrink-0 mt-0.5" />
+                                <a
+                                    href="https://www.google.com/maps/search/?api=1&query=24.387602,88.607993"
+                                    target="_blank"
+                                    rel="noopener noreferrer"
+                                    className="text-gray-300 hover:text-primary-red transition-colors text-sm"
+                                >
+                                    Airport Rd, Ahmednogor 6203
+                                </a>
+                            </li>
+                            <li className="flex items-start space-x-2">
+                                <Clock className="w-5 h-5 text-primary-red flex-shrink-0 mt-0.5" />
                                 <span className="text-gray-300 text-sm">
-                                    Wasa Rd, Ahmednogor, Rajshahi, Bangladesh
+                                    Open hours: 10am to 8pm
                                 </span>
                             </li>
                             <li className="flex items-start space-x-2">
