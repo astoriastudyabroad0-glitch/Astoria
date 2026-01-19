@@ -2,8 +2,11 @@ import React from 'react';
 import { GraduationCap, FileCheck, Plane, Home as HomeIcon, Users, Award, Star, Globe, BookOpen, Shield } from 'lucide-react';
 import Button from '../components/Button';
 import Card from '../components/Card';
+import PromoCard from '../components/PromoCard';
 import SectionWrapper from '../components/SectionWrapper';
 import heroImage from '../assets/hero.png';
+import maltaImage from '../assets/study-malta.png';
+import nzImage from '../assets/study-new-zealand.png';
 
 const Home = () => {
     const services = [
@@ -254,6 +257,50 @@ const Home = () => {
                             </p>
                         </div>
                     ))}
+                </div>
+            </SectionWrapper>
+
+            {/* Latest Opportunities Section - From Facebook Posts */}
+            <SectionWrapper background="light">
+                <div className="text-center mb-12">
+                    <h2 className="font-poppins font-bold text-3xl md:text-4xl mb-4 text-secondary-blue">
+                        Latest Opportunities
+                    </h2>
+                    <p className="text-lg text-gray-600">
+                        Check out our latest study abroad offers and updates
+                    </p>
+                </div>
+
+                <div className="grid md:grid-cols-2 gap-8 max-w-5xl mx-auto">
+                    <PromoCard
+                        image={maltaImage}
+                        title="Study in Malta"
+                        subtitle="Detailed Guidance"
+                        features={[
+                            "English Speaking European Country",
+                            "Affordable Tuition & Living Cost",
+                            "EU & Schengen Member State",
+                            "High Visa Success Rate",
+                            "Work While Studying (20hrs/week)"
+                        ]}
+                        details={[
+                            { label: "Intakes", value: "January, April, July, October" },
+                            { label: "Tuition Fee", value: "Approx €3,000 – €8,000 / year" }
+                        ]}
+                    />
+                    <PromoCard
+                        image={nzImage}
+                        title="Study in New Zealand"
+                        subtitle="2025-2026 Updates"
+                        features={[
+                            "Top-Ranked Universities & Programs",
+                            "Work Up to 25 Hours/Week (New Rule)",
+                            "Post-Study Work Visa (Stay 1-3 Years)",
+                            "Open Pathway to PR (Permanent Residency)",
+                            "Family Accompany Policy for Specific Courses"
+                        ]}
+                        ctaLink="/contact"
+                    />
                 </div>
             </SectionWrapper>
 
