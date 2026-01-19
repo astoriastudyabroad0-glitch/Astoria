@@ -9,6 +9,8 @@ const Contact = () => {
         phone: '',
         email: '',
         country: '',
+        ieltsTaken: 'no',
+        ieltsScore: '',
         message: '',
     });
 
@@ -49,8 +51,18 @@ const Contact = () => {
             newErrors.email = 'Please enter a valid email address';
         }
 
-        if (!formData.country) {
+        if (formData.country) {
+            if (formData.country === 'Select a country') { // In case the value is just the placeholder text
+                newErrors.country = 'Please select a country';
+            }
+        } else {
             newErrors.country = 'Please select a country';
+        }
+
+        if (formData.ieltsTaken === 'yes') {
+            if (!formData.ieltsScore.trim()) {
+                newErrors.ieltsScore = 'IELTS Score is required';
+            }
         }
 
         if (!formData.message.trim()) {
@@ -77,6 +89,8 @@ const Contact = () => {
                     phone: '',
                     email: '',
                     country: '',
+                    ieltsTaken: 'no',
+                    ieltsScore: '',
                     message: '',
                 });
                 setSubmitted(false);
@@ -254,6 +268,58 @@ const Contact = () => {
                                 </select>
                                 {errors.country && (
                                     <p className="text-red-500 text-sm mt-1">{errors.country}</p>
+                                )}
+                            </div>
+
+                            {/* IELTS Section */}
+                            <div>
+                                <label className="block text-sm font-medium text-gray-700 mb-2">
+                                    Have you taken IELTS?
+                                </label>
+                                <div className="flex items-center space-x-6 mb-4">
+                                    <label className="flex items-center cursor-pointer">
+                                        <input
+                                            type="radio"
+                                            name="ieltsTaken"
+                                            value="yes"
+                                            checked={formData.ieltsTaken === 'yes'}
+                                            onChange={handleChange}
+                                            className="w-4 h-4 text-primary-red border-gray-300 focus:ring-primary-red"
+                                        />
+                                        <span className="ml-2 text-gray-700">Yes</span>
+                                    </label>
+                                    <label className="flex items-center cursor-pointer">
+                                        <input
+                                            type="radio"
+                                            name="ieltsTaken"
+                                            value="no"
+                                            checked={formData.ieltsTaken === 'no'}
+                                            onChange={handleChange}
+                                            className="w-4 h-4 text-primary-red border-gray-300 focus:ring-primary-red"
+                                        />
+                                        <span className="ml-2 text-gray-700">No</span>
+                                    </label>
+                                </div>
+
+                                {formData.ieltsTaken === 'yes' && (
+                                    <div className="animate-fade-in-down">
+                                        <label htmlFor="ieltsScore" className="block text-sm font-medium text-gray-700 mb-2">
+                                            IELTS Score *
+                                        </label>
+                                        <input
+                                            type="text"
+                                            id="ieltsScore"
+                                            name="ieltsScore"
+                                            value={formData.ieltsScore}
+                                            onChange={handleChange}
+                                            className={`w-full px-4 py-3 rounded-xl border ${errors.ieltsScore ? 'border-red-500' : 'border-gray-300'
+                                                } focus:outline-none focus:ring-2 focus:ring-primary-red focus:border-transparent`}
+                                            placeholder="Enter your IELTS score (e.g. 6.5)"
+                                        />
+                                        {errors.ieltsScore && (
+                                            <p className="text-red-500 text-sm mt-1">{errors.ieltsScore}</p>
+                                        )}
+                                    </div>
                                 )}
                             </div>
 
