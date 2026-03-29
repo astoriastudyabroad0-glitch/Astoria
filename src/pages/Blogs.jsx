@@ -8,9 +8,11 @@ const Blogs = () => {
     const [posts, setPosts] = useState([]);
 
     useEffect(() => {
-        // Load posts from our local service
-        const data = BlogService.getAll();
-        setPosts(data);
+        const loadPosts = async () => {
+            const data = await BlogService.getAll();
+            setPosts(data);
+        };
+        loadPosts();
     }, []);
 
     return (

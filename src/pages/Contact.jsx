@@ -2,6 +2,7 @@ import React, { useState } from 'react';
 import { Phone, MapPin, Instagram, Mail, Send } from 'lucide-react';
 import SectionWrapper from '../components/SectionWrapper';
 import Button from '../components/Button';
+import { MessageService } from '../services/MessageService';
 
 const Contact = () => {
     const [formData, setFormData] = useState({
@@ -72,29 +73,35 @@ const Contact = () => {
         return newErrors;
     };
 
-    const handleSubmit = (e) => {
+    const handleSubmit = async (e) => {
         e.preventDefault();
 
         const newErrors = validateForm();
 
         if (Object.keys(newErrors).length === 0) {
             // Form is valid, submit it
-            console.log('Form submitted:', formData);
-            setSubmitted(true);
+            try {
+                await MessageService.save(formData);
+                console.log('Form submitted:', formData);
+                setSubmitted(true);
 
-            // Reset form after 3 seconds
-            setTimeout(() => {
-                setFormData({
-                    name: '',
-                    phone: '',
-                    email: '',
-                    country: '',
-                    ieltsTaken: 'no',
-                    ieltsScore: '',
-                    message: '',
-                });
-                setSubmitted(false);
-            }, 3000);
+                // Reset form after 3 seconds
+                setTimeout(() => {
+                    setFormData({
+                        name: '',
+                        phone: '',
+                        email: '',
+                        country: '',
+                        ieltsTaken: 'no',
+                        ieltsScore: '',
+                        message: '',
+                    });
+                    setSubmitted(false);
+                }, 3000);
+            } catch (err) {
+                console.error('Error submitting form:', err);
+                setErrors({ submit: 'Failed to send message. Please try again later.' });
+            }
         } else {
             setErrors(newErrors);
         }

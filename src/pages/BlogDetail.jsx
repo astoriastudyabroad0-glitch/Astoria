@@ -12,14 +12,18 @@ const BlogDetail = () => {
     const [loading, setLoading] = useState(true);
 
     useEffect(() => {
-        const foundPost = BlogService.getById(id);
-        if (foundPost) {
-            setPost(foundPost);
-        } else {
-            // Post not found
-            navigate('/blogs');
-        }
-        setLoading(false);
+        const loadPost = async () => {
+            setLoading(true);
+            const foundPost = await BlogService.getById(id);
+            if (foundPost) {
+                setPost(foundPost);
+            } else {
+                // Post not found
+                navigate('/blogs');
+            }
+            setLoading(false);
+        };
+        loadPost();
     }, [id, navigate]);
 
     if (loading) return <div className="pt-32 text-center">Loading...</div>;
