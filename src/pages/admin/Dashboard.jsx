@@ -3,6 +3,7 @@ import { useNavigate } from 'react-router-dom';
 import { Plus, Edit, Trash2, LogOut, Save, X, ArrowLeft, MessageSquare, Newspaper, CheckCircle, User, Phone, Mail, Globe, BookOpen } from 'lucide-react';
 import { BlogService } from '../../services/BlogService';
 import { MessageService } from '../../services/MessageService';
+import { supabase } from '../../lib/supabaseClient';
 import Button from '../../components/Button';
 
 const Dashboard = () => {
@@ -13,6 +14,7 @@ const Dashboard = () => {
     const [isEditing, setIsEditing] = useState(false);
     const [currentPost, setCurrentPost] = useState(null);
     const [viewingMessage, setViewingMessage] = useState(null);
+    const [loading, setLoading] = useState(true);
 
     // Initial Form State
     const initialFormState = {
@@ -24,13 +26,16 @@ const Dashboard = () => {
     const [formData, setFormData] = useState(initialFormState);
 
     useEffect(() => {
-        // Check Auth
-        const token = localStorage.getItem('adminToken');
-        if (!token) {
-            navigate('/admin');
-            return;
-        }
-        loadData();
+        const checkAuth = async () => {
+            const { data: { session } } = await supabase.auth.getSession();
+            if (!session) {
+                navigate('/admin');
+            } else {
+                setLoading(false);
+                loadData();
+            }
+        };
+        checkAuth();
     }, [navigate]);
 
     const loadData = async () => {
@@ -42,8 +47,8 @@ const Dashboard = () => {
         setMessages(messageData);
     };
 
-    const handleLogout = () => {
-        localStorage.removeItem('adminToken');
+    const handleLogout = async () => {
+        await supabase.auth.signOut();
         navigate('/admin');
     };
 
@@ -103,6 +108,12 @@ const Dashboard = () => {
             await handleMarkAsRead(message.id);
         }
     };
+
+    if (loading) {
+        return <div className="min-h-screen flex items-center justify-center bg-gray-50">
+            <div className="animate-spin rounded-full h-12 w-12 border-b-2 border-secondary-blue"></div>
+        </div>;
+    }
 
     // Render Logic
     if (isEditing) {
