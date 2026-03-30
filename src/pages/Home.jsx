@@ -1,4 +1,4 @@
-import React from 'react';
+import React, { useState, useEffect } from 'react';
 import { GraduationCap, FileCheck, Plane, Home as HomeIcon, Users, Award, Star, Globe, BookOpen, Shield } from 'lucide-react';
 import Button from '../components/Button';
 import Card from '../components/Card';
@@ -95,7 +95,7 @@ const Home = () => {
     const [currentIndex, setCurrentIndex] = useState(0);
     const [isAnimating, setIsAnimating] = useState(false);
 
-    React.useEffect(() => {
+    useEffect(() => {
         const fetchReviews = async () => {
             try {
                 const data = await ReviewService.getApproved();
@@ -108,7 +108,7 @@ const Home = () => {
     }, []);
 
     // Auto-slide logic
-    React.useEffect(() => {
+    useEffect(() => {
         if (testimonials.length <= 3) return;
         
         const interval = setInterval(() => {
