@@ -3,15 +3,19 @@ import { useNavigate } from 'react-router-dom';
 import { Plus, Edit, Trash2, LogOut, Save, X, ArrowLeft, MessageSquare, Newspaper, CheckCircle, User, Phone, Mail, Globe, BookOpen } from 'lucide-react';
 import { BlogService } from '../../services/BlogService';
 import { MessageService } from '../../services/MessageService';
+import { ReviewService } from '../../services/ReviewService';
+
 import { supabase } from '../../lib/supabaseClient';
 import Button from '../../components/Button';
 
 const Dashboard = () => {
     const navigate = useNavigate();
-    const [activeTab, setActiveTab] = useState('blogs'); // 'blogs' or 'messages'
+    const [activeTab, setActiveTab] = useState('blogs'); // 'blogs', 'messages', or 'reviews'
     const [posts, setPosts] = useState([]);
     const [messages, setMessages] = useState([]);
+    const [reviews, setReviews] = useState([]);
     const [isEditing, setIsEditing] = useState(false);
+
     const [currentPost, setCurrentPost] = useState(null);
     const [viewingMessage, setViewingMessage] = useState(null);
     const [loading, setLoading] = useState(true);
@@ -39,13 +43,16 @@ const Dashboard = () => {
     }, [navigate]);
 
     const loadData = async () => {
-        const [blogData, messageData] = await Promise.all([
+        const [blogData, messageData, reviewData] = await Promise.all([
             BlogService.getAll(),
-            MessageService.getAll()
+            MessageService.getAll(),
+            ReviewService.getAllFromAdmin()
         ]);
         setPosts(blogData);
         setMessages(messageData);
+        setReviews(reviewData);
     };
+
 
     const handleLogout = async () => {
         await supabase.auth.signOut();
@@ -108,6 +115,20 @@ const Dashboard = () => {
             await handleMarkAsRead(message.id);
         }
     };
+
+    // Review Actions
+    const handleApproveReview = async (id) => {
+        await ReviewService.approve(id);
+        loadData();
+    };
+
+    const handleDeleteReview = async (id) => {
+        if (window.confirm('Are you sure you want to delete this review?')) {
+            await ReviewService.delete(id);
+            loadData();
+        }
+    };
+
 
     if (loading) {
         return <div className="min-h-screen flex items-center justify-center bg-gray-50">
@@ -228,6 +249,19 @@ const Dashboard = () => {
                         </div>
                         <span>Messages</span>
                     </button>
+                    <button
+                        onClick={() => setActiveTab('reviews')}
+                        className={`w-full flex items-center space-x-3 px-4 py-3 rounded-xl transition-all ${activeTab === 'reviews' ? 'bg-white text-secondary-blue shadow-lg font-semibold' : 'hover:bg-blue-800 text-blue-100'}`}
+                    >
+                        <div className="relative">
+                            <Star className="w-5 h-5" />
+                            {reviews.some(r => r.status === 'pending') && (
+                                <span className="absolute -top-1 -right-1 w-2 h-2 bg-yellow-400 rounded-full animate-pulse"></span>
+                            )}
+                        </div>
+                        <span>Reviews</span>
+                    </button>
+
                 </nav>
 
                 <div className="mt-auto pt-10 border-t border-blue-800 hidden lg:block">
@@ -254,13 +288,16 @@ const Dashboard = () => {
                 <header className="mb-8 flex flex-col md:flex-row md:items-center justify-between gap-4">
                     <div>
                         <h2 className="text-2xl font-bold text-gray-800">
-                            {activeTab === 'blogs' ? 'Blog Management' : 'Candidate Inquiries'}
+                            {activeTab === 'blogs' ? 'Blog Management' : activeTab === 'messages' ? 'Candidate Inquiries' : 'Success Stories & Reviews'}
                         </h2>
                         <p className="text-gray-500 text-sm">
                             {activeTab === 'blogs'
                                 ? `Manage your educational updates and success stories (${posts.length} posts)`
-                                : `Review and respond to student messages (${messages.length} total)`}
+                                : activeTab === 'messages'
+                                    ? `Review and respond to student messages (${messages.length} total)`
+                                    : `Approve or manage student testimonials (${reviews.length} total)`}
                         </p>
+
                     </div>
 
                     {activeTab === 'blogs' && (
@@ -469,7 +506,83 @@ const Dashboard = () => {
                         </div>
                     </div>
                 )}
+                {activeTab === 'reviews' && (
+                    <div className="bg-white rounded-2xl shadow-sm border border-gray-100 overflow-hidden">
+                        <div className="overflow-x-auto">
+                            <table className="w-full text-left">
+                                <thead className="bg-gray-50/50 text-gray-400 text-xs uppercase font-bold tracking-wider">
+                                    <tr>
+                                        <th className="px-6 py-4">Student</th>
+                                        <th className="px-6 py-4">Review</th>
+                                        <th className="px-6 py-4">Status</th>
+                                        <th className="px-6 py-4 text-right">Actions</th>
+                                    </tr>
+                                </thead>
+                                <tbody className="divide-y divide-gray-50">
+                                    {reviews.map((review) => (
+                                        <tr key={review.id} className="hover:bg-blue-50/30 transition-colors">
+                                            <td className="px-6 py-4">
+                                                <div className="font-bold text-gray-900">{review.name}</div>
+                                                <div className="text-xs text-blue-600">{review.country}</div>
+                                                <div className="flex mt-1 text-yellow-400">
+                                                    {[...Array(review.rating)].map((_, i) => (
+                                                        <Star key={i} className="w-3 h-3 fill-current" />
+                                                    ))}
+                                                </div>
+                                            </td>
+                                            <td className="px-6 py-4">
+                                                <div className="text-sm text-gray-600 max-w-md line-clamp-2 italic">
+                                                    "{review.text}"
+                                                </div>
+                                            </td>
+                                            <td className="px-6 py-4">
+                                                {review.status === 'pending' ? (
+                                                    <span className="px-2 py-1 bg-yellow-100 text-yellow-700 rounded-md text-[10px] font-bold uppercase tracking-tighter animate-pulse">
+                                                        Pending Approval
+                                                    </span>
+                                                ) : (
+                                                    <span className="px-2 py-1 bg-green-100 text-green-700 rounded-md text-[10px] font-bold uppercase tracking-tighter">
+                                                        Approved & Live
+                                                    </span>
+                                                )}
+                                            </td>
+                                            <td className="px-6 py-4 text-right">
+                                                <div className="flex justify-end space-x-2">
+                                                    {review.status === 'pending' && (
+                                                        <button
+                                                            onClick={() => handleApproveReview(review.id)}
+                                                            className="p-2 text-green-600 hover:bg-green-100 rounded-lg transition-colors"
+                                                            title="Approve"
+                                                        >
+                                                            <CheckCircle className="w-5 h-5" />
+                                                        </button>
+                                                    )}
+                                                    <button
+                                                        onClick={() => handleDeleteReview(review.id)}
+                                                        className="p-2 text-red-600 hover:bg-red-100 rounded-lg transition-colors"
+                                                        title="Delete"
+                                                    >
+                                                        <Trash2 className="w-5 h-5" />
+                                                    </button>
+                                                </div>
+                                            </td>
+                                        </tr>
+                                    ))}
+                                    {reviews.length === 0 && (
+                                        <tr>
+                                            <td colSpan="4" className="px-6 py-20 text-center text-gray-400">
+                                                <Star className="w-12 h-12 mx-auto mb-4 opacity-20" />
+                                                <p>No success stories found yet</p>
+                                            </td>
+                                        </tr>
+                                    )}
+                                </tbody>
+                            </table>
+                        </div>
+                    </div>
+                )}
             </main>
+
         </div>
     );
 };

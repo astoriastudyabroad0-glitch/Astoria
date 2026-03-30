@@ -3,6 +3,9 @@ import { Phone, MapPin, Instagram, Mail, Send } from 'lucide-react';
 import SectionWrapper from '../components/SectionWrapper';
 import Button from '../components/Button';
 import { MessageService } from '../services/MessageService';
+import { ReviewService } from '../services/ReviewService';
+import { Star } from 'lucide-react';
+
 
 const Contact = () => {
     const [formData, setFormData] = useState({
@@ -17,6 +20,14 @@ const Contact = () => {
 
     const [errors, setErrors] = useState({});
     const [submitted, setSubmitted] = useState(false);
+    const [reviewSubmitted, setReviewSubmitted] = useState(false);
+
+    const [reviewData, setReviewData] = useState({
+        name: '',
+        country: '',
+        text: '',
+        rating: 5,
+    });
 
     const handleChange = (e) => {
         const { name, value } = e.target;
@@ -106,6 +117,26 @@ const Contact = () => {
             setErrors(newErrors);
         }
     };
+
+    const handleReviewSubmit = async (e) => {
+        e.preventDefault();
+        try {
+            await ReviewService.save(reviewData);
+            setReviewSubmitted(true);
+            setTimeout(() => {
+                setReviewData({
+                    name: '',
+                    country: '',
+                    text: '',
+                    rating: 5,
+                });
+                setReviewSubmitted(false);
+            }, 3000);
+        } catch (err) {
+            console.error('Error submitting review:', err);
+        }
+    };
+
 
     const contactInfo = [
         {
@@ -391,22 +422,106 @@ const Contact = () => {
                 </div>
             </SectionWrapper>
 
-            {/* Office Hours */}
+            {/* Office Hours & Success Story Section */}
             <SectionWrapper background="light">
-                <div className="text-center max-w-2xl mx-auto">
-                    <h2 className="font-poppins font-bold text-3xl mb-6 text-secondary-blue">
-                        Office Hours
-                    </h2>
-                    <div className="bg-white rounded-xl p-8 shadow-md">
-                        <div className="space-y-3 text-lg">
-                            <div className="flex justify-between">
-                                <span className="font-medium text-gray-700">Open Hours:</span>
-                                <span className="text-gray-600">10am to 8pm</span>
+                <div className="grid lg:grid-cols-2 gap-12">
+                    {/* Office Hours */}
+                    <div className="text-center max-w-2xl mx-auto flex flex-col justify-center">
+                        <h2 className="font-poppins font-bold text-3xl mb-6 text-secondary-blue uppercase tracking-tight">
+                            Office Hours
+                        </h2>
+                        <div className="bg-white rounded-2xl p-8 shadow-md border border-gray-100">
+                            <div className="space-y-3 text-lg">
+                                <div className="flex justify-between items-center bg-blue-50/50 p-4 rounded-xl">
+                                    <span className="font-semibold text-secondary-blue">Open Hours:</span>
+                                    <span className="text-gray-700 bg-white px-4 py-1 rounded-full shadow-sm">10am to 8pm</span>
+                                </div>
                             </div>
+                            <p className="text-sm text-gray-500 mt-6 italic">
+                                Walk-ins welcome, but appointments are recommended for personalized consultation.
+                            </p>
                         </div>
-                        <p className="text-sm text-gray-600 mt-6">
-                            Walk-ins welcome, but appointments are recommended for personalized consultation.
+                    </div>
+
+                    {/* Review Form */}
+                    <div className="bg-white rounded-3xl p-8 shadow-xl border border-gray-100">
+                        <h2 className="font-poppins font-bold text-3xl mb-2 text-secondary-blue">
+                            Were You Inspired?
+                        </h2>
+                        <p className="text-gray-500 mb-8 text-sm">
+                            Share your success story and inspire other students!
                         </p>
+
+                        {reviewSubmitted && (
+                            <div className="bg-blue-50 border border-blue-200 text-secondary-blue rounded-xl p-4 mb-6 animate-fade-in">
+                                <p className="font-bold flex items-center">
+                                    <CheckCircle className="w-5 h-5 mr-2" />
+                                    Success Story Received!
+                                </p>
+                                <p className="text-xs mt-1">Thank you for sharing. It will go live after admin approval.</p>
+                            </div>
+                        )}
+
+                        <form onSubmit={handleReviewSubmit} className="space-y-5">
+                            <div className="grid md:grid-cols-2 gap-5">
+                                <div>
+                                    <label className="block text-xs font-bold text-gray-400 uppercase tracking-widest mb-2">Name</label>
+                                    <input
+                                        type="text"
+                                        value={reviewData.name}
+                                        onChange={(e) => setReviewData({ ...reviewData, name: e.target.value })}
+                                        className="w-full px-4 py-3 rounded-xl border border-gray-200 focus:outline-none focus:ring-2 focus:ring-primary-red"
+                                        placeholder="John Doe"
+                                        required
+                                    />
+                                </div>
+                                <div>
+                                    <label className="block text-xs font-bold text-gray-400 uppercase tracking-widest mb-2">Country</label>
+                                    <input
+                                        type="text"
+                                        value={reviewData.country}
+                                        onChange={(e) => setReviewData({ ...reviewData, country: e.target.value })}
+                                        className="w-full px-4 py-3 rounded-xl border border-gray-200 focus:outline-none focus:ring-2 focus:ring-primary-red"
+                                        placeholder="e.g., Australia"
+                                        required
+                                    />
+                                </div>
+                            </div>
+
+                            <div>
+                                <label className="block text-xs font-bold text-gray-400 uppercase tracking-widest mb-2">Your Story</label>
+                                <textarea
+                                    value={reviewData.text}
+                                    onChange={(e) => setReviewData({ ...reviewData, text: e.target.value })}
+                                    rows="4"
+                                    className="w-full px-4 py-3 rounded-xl border border-gray-200 focus:outline-none focus:ring-2 focus:ring-primary-red resize-none"
+                                    placeholder="Tell us about your experience with Astoria..."
+                                    required
+                                ></textarea>
+                            </div>
+
+                            <div>
+                                <label className="block text-xs font-bold text-gray-400 uppercase tracking-widest mb-3 text-center">Your Rating</label>
+                                <div className="flex justify-center space-x-2">
+                                    {[1, 2, 3, 4, 5].map((star) => (
+                                        <button
+                                            key={star}
+                                            type="button"
+                                            onClick={() => setReviewData({ ...reviewData, rating: star })}
+                                            className="transition-transform hover:scale-110 active:scale-95"
+                                        >
+                                            <Star
+                                                className={`w-8 h-8 ${star <= reviewData.rating ? 'text-yellow-400 fill-current' : 'text-gray-200'}`}
+                                            />
+                                        </button>
+                                    ))}
+                                </div>
+                            </div>
+
+                            <Button type="submit" variant="primary" className="w-full flex justify-center py-4 text-lg">
+                                Submit Success Story
+                            </Button>
+                        </form>
                     </div>
                 </div>
             </SectionWrapper>

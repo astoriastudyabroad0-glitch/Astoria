@@ -4,6 +4,9 @@ import Button from '../components/Button';
 import Card from '../components/Card';
 import PromoCard from '../components/PromoCard';
 import SectionWrapper from '../components/SectionWrapper';
+import { ReviewService } from '../services/ReviewService';
+import { ChevronLeft, ChevronRight, Quote } from 'lucide-react';
+
 import heroImage from '../assets/hero.png';
 import maltaImage from '../assets/study-malta.png';
 import nzImage from '../assets/study-new-zealand.png';
@@ -88,26 +91,55 @@ const Home = () => {
         },
     ];
 
-    const testimonials = [
-        {
-            name: 'Rafiul Karim Nirjhor',
-            country: 'Australia',
-            text: 'Astoria made my dream of studying in Australia a reality. Their support was invaluable!',
-            rating: 5,
-        },
-        {
-            name: 'Rakib Hassan',
-            country: 'Australia',
-            text: 'Professional, friendly, and efficient. I couldn\'t have done it without them.',
-            rating: 5,
-        },
-        {
-            name: 'Nadia Khan',
-            country: 'UK',
-            text: 'From application to arrival, they were with me every step of the way.',
-            rating: 5,
-        },
-    ];
+    const [testimonials, setTestimonials] = useState([]);
+    const [currentIndex, setCurrentIndex] = useState(0);
+    const [isAnimating, setIsAnimating] = useState(false);
+
+    React.useEffect(() => {
+        const fetchReviews = async () => {
+            try {
+                const data = await ReviewService.getApproved();
+                setTestimonials(data);
+            } catch (err) {
+                console.error('Error fetching reviews:', err);
+            }
+        };
+        fetchReviews();
+    }, []);
+
+    // Auto-slide logic
+    React.useEffect(() => {
+        if (testimonials.length <= 3) return;
+        
+        const interval = setInterval(() => {
+            nextSlide();
+        }, 5000);
+        return () => clearInterval(interval);
+    }, [testimonials.length, currentIndex]);
+
+    const nextSlide = () => {
+        if (isAnimating) return;
+        setIsAnimating(true);
+        setCurrentIndex((prev) => (prev + 1) % testimonials.length);
+        setTimeout(() => setIsAnimating(false), 500);
+    };
+
+    const prevSlide = () => {
+        if (isAnimating) return;
+        setIsAnimating(true);
+        setCurrentIndex((prev) => (prev - 1 + testimonials.length) % testimonials.length);
+        setTimeout(() => setIsAnimating(false), 500);
+    };
+
+    const getVisibleTestimonials = () => {
+        if (testimonials.length === 0) return [];
+        const visible = [];
+        for (let i = 0; i < Math.min(testimonials.length, 3); i++) {
+            visible.push(testimonials[(currentIndex + i) % testimonials.length]);
+        }
+        return visible;
+    };
+
 
     return (
         <div className="pt-20">
@@ -315,22 +347,67 @@ const Home = () => {
                     </p>
                 </div>
 
-                <div className="grid md:grid-cols-3 gap-8">
-                    {testimonials.map((testimonial, index) => (
-                        <div key={index} className="bg-white rounded-xl shadow-md p-6 border-t-4 border-primary-red">
-                            <div className="flex mb-4">
-                                {[...Array(testimonial.rating)].map((_, i) => (
-                                    <Star key={i} className="w-5 h-5 text-yellow-400 fill-current" />
-                                ))}
-                            </div>
-                            <p className="text-gray-700 mb-4 italic">"{testimonial.text}"</p>
-                            <div>
-                                <p className="font-semibold text-secondary-blue">{testimonial.name}</p>
-                                <p className="text-sm text-gray-600">Now studying in {testimonial.country}</p>
-                            </div>
+                <div className="relative group max-w-6xl mx-auto">
+                    {/* Navigation Buttons */}
+                    {testimonials.length > 3 && (
+                        <>
+                            <button
+                                onClick={prevSlide}
+                                className="absolute -left-4 md:-left-12 top-1/2 -translate-y-1/2 z-20 p-3 bg-white rounded-full shadow-lg text-secondary-blue hover:bg-secondary-blue hover:text-white transition-all opacity-0 group-hover:opacity-100"
+                            >
+                                <ChevronLeft className="w-6 h-6" />
+                            </button>
+                            <button
+                                onClick={nextSlide}
+                                className="absolute -right-4 md:-right-12 top-1/2 -translate-y-1/2 z-20 p-3 bg-white rounded-full shadow-lg text-secondary-blue hover:bg-secondary-blue hover:text-white transition-all opacity-0 group-hover:opacity-100"
+                            >
+                                <ChevronRight className="w-6 h-6" />
+                            </button>
+                        </>
+                    )}
+
+                    <div className="overflow-hidden px-2">
+                        <div 
+                            className={`grid md:grid-cols-3 gap-8 transition-opacity duration-500 ${isAnimating ? 'opacity-40' : 'opacity-100'}`}
+                        >
+                            {getVisibleTestimonials().map((testimonial, index) => (
+                                <div 
+                                    key={`${testimonial.id}-${index}`} 
+                                    className="bg-white rounded-3xl shadow-xl p-8 border-t-8 border-primary-red relative transform transition-transform hover:-translate-y-2"
+                                >
+                                    <Quote className="absolute top-4 right-4 w-10 h-10 text-gray-50 opacity-10" />
+                                    <div className="flex mb-4">
+                                        {[...Array(testimonial.rating)].map((_, i) => (
+                                            <Star key={i} className="w-5 h-5 text-yellow-400 fill-current" />
+                                        ))}
+                                    </div>
+                                    <p className="text-gray-700 mb-8 italic leading-relaxed font-medium">"{testimonial.text}"</p>
+                                    <div className="mt-auto pt-6 border-t border-gray-50 flex items-center space-x-4">
+                                        <div className="w-12 h-12 bg-blue-50 rounded-2xl flex items-center justify-center text-secondary-blue font-bold text-xl">
+                                            {testimonial.name.charAt(0)}
+                                        </div>
+                                        <div>
+                                            <p className="font-bold text-secondary-blue uppercase tracking-tight">{testimonial.name}</p>
+                                            <p className="text-xs text-primary-red font-bold">Now studying in {testimonial.country}</p>
+                                        </div>
+                                    </div>
+                                </div>
+                            ))}
                         </div>
-                    ))}
+                    </div>
+
+                    {/* Indicators */}
+                    <div className="flex justify-center mt-10 space-x-2">
+                        {testimonials.map((_, i) => (
+                            <button
+                                key={i}
+                                onClick={() => setCurrentIndex(i)}
+                                className={`w-2 h-2 rounded-full transition-all ${currentIndex === i ? 'bg-secondary-blue w-8' : 'bg-gray-200'}`}
+                            />
+                        ))}
+                    </div>
                 </div>
+
             </SectionWrapper>
 
             {/* CTA Section */}
