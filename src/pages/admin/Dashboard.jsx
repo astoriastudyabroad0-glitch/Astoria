@@ -4,30 +4,50 @@ import { Plus, Edit, Trash2, LogOut, Save, X, ArrowLeft, MessageSquare, Newspape
 import { BlogService } from '../../services/BlogService';
 import { MessageService } from '../../services/MessageService';
 import { ReviewService } from '../../services/ReviewService';
+import { SettingsService } from '../../services/SettingsService';
+import { CountryService } from '../../services/CountryService';
+
 
 import { supabase } from '../../lib/supabaseClient';
 import Button from '../../components/Button';
 
 const Dashboard = () => {
     const navigate = useNavigate();
-    const [activeTab, setActiveTab] = useState('blogs'); // 'blogs', 'messages', or 'reviews'
+    const [activeTab, setActiveTab] = useState('blogs'); // 'blogs', 'messages', 'reviews', 'countries', 'settings'
     const [posts, setPosts] = useState([]);
     const [messages, setMessages] = useState([]);
     const [reviews, setReviews] = useState([]);
+    const [countries, setCountries] = useState([]);
+    const [settings, setSettings] = useState({
+        phone: '',
+        email: '',
+        address: '',
+        google_maps_url: '',
+        instagram_username: '',
+        instagram_url: '',
+        office_hours: ''
+    });
     const [isEditing, setIsEditing] = useState(false);
+    const [isEditingCountry, setIsEditingCountry] = useState(false);
+    const [currentCountry, setCurrentCountry] = useState(null);
+
 
     const [currentPost, setCurrentPost] = useState(null);
     const [viewingMessage, setViewingMessage] = useState(null);
     const [loading, setLoading] = useState(true);
 
     // Initial Form State
-    const initialFormState = {
-        title: '',
-        subtitle: '',
-        image: '',
-        content: ''
+    const countryInitialState = {
+        name: '',
+        flag: '',
+        description: '',
+        highlights: '',
+        popular_items: '',
+        average_tuition: '',
+        order_index: 0
     };
-    const [formData, setFormData] = useState(initialFormState);
+    const [countryForm, setCountryForm] = useState(countryInitialState);
+
 
     useEffect(() => {
         const checkAuth = async () => {
@@ -43,15 +63,20 @@ const Dashboard = () => {
     }, [navigate]);
 
     const loadData = async () => {
-        const [blogData, messageData, reviewData] = await Promise.all([
+        const [blogData, messageData, reviewData, countryData, settingsData] = await Promise.all([
             BlogService.getAll(),
             MessageService.getAll(),
-            ReviewService.getAllFromAdmin()
+            ReviewService.getAllFromAdmin(),
+            CountryService.getAll(),
+            SettingsService.getSettings()
         ]);
         setPosts(blogData);
         setMessages(messageData);
         setReviews(reviewData);
+        setCountries(countryData);
+        setSettings(settingsData);
     };
+
 
 
     const handleLogout = async () => {
@@ -115,6 +140,60 @@ const Dashboard = () => {
             await handleMarkAsRead(message.id);
         }
     };
+
+    // Settings Actions
+    const handleUpdateSettings = async (e) => {
+        e.preventDefault();
+        await SettingsService.updateSettings(settings);
+        alert('Settings updated successfully!');
+        loadData();
+    };
+
+    // Country Actions
+    const handleDeleteCountry = async (id) => {
+        if (window.confirm('Are You sure you want to delete this study destination?')) {
+            await CountryService.delete(id);
+            loadData();
+        }
+    };
+
+    const startEditCountry = (country) => {
+        setCurrentCountry(country);
+        setCountryForm({
+            name: country.name,
+            flag: country.flag,
+            description: country.description,
+            highlights: Array.isArray(country.highlights) ? country.highlights.join('\n') : '',
+            popular_items: Array.isArray(country.popular_items) ? country.popular_items.join('\n') : '',
+            average_tuition: country.average_tuition,
+            order_index: country.order_index
+        });
+        setIsEditingCountry(true);
+    };
+
+    const startCreateCountry = () => {
+        setCurrentCountry(null);
+        setCountryForm(countryInitialState);
+        setIsEditingCountry(true);
+    };
+
+    const handleSaveCountry = async (e) => {
+        e.preventDefault();
+        const formattedCountry = {
+            ...countryForm,
+            highlights: countryForm.highlights.split('\n').filter(h => h.trim() !== ''),
+            popular_items: countryForm.popular_items.split('\n').filter(p => p.trim() !== '')
+        };
+
+        if (currentCountry) {
+            await CountryService.update(currentCountry.id, formattedCountry);
+        } else {
+            await CountryService.create(formattedCountry);
+        }
+        setIsEditingCountry(false);
+        loadData();
+    };
+
 
     // Review Actions
     const handleApproveReview = async (id) => {
@@ -261,6 +340,21 @@ const Dashboard = () => {
                         </div>
                         <span>Reviews</span>
                     </button>
+                    <button
+                        onClick={() => setActiveTab('countries')}
+                        className={`w-full flex items-center space-x-3 px-4 py-3 rounded-xl transition-all ${activeTab === 'countries' ? 'bg-white text-secondary-blue shadow-lg font-semibold' : 'hover:bg-blue-800 text-blue-100'}`}
+                    >
+                        <Globe className="w-5 h-5" />
+                        <span>Destinations</span>
+                    </button>
+                    <button
+                        onClick={() => setActiveTab('settings')}
+                        className={`w-full flex items-center space-x-3 px-4 py-3 rounded-xl transition-all ${activeTab === 'settings' ? 'bg-white text-secondary-blue shadow-lg font-semibold' : 'hover:bg-blue-800 text-blue-100'}`}
+                    >
+                        <Plus className="w-5 h-5 rotate-45" /> {/* Using Plus rotated as a settings-ish icon */}
+                        <span>Settings</span>
+                    </button>
+
 
                 </nav>
 
@@ -288,17 +382,32 @@ const Dashboard = () => {
                 <header className="mb-8 flex flex-col md:flex-row md:items-center justify-between gap-4">
                     <div>
                         <h2 className="text-2xl font-bold text-gray-800">
-                            {activeTab === 'blogs' ? 'Blog Management' : activeTab === 'messages' ? 'Candidate Inquiries' : 'Success Stories & Reviews'}
+                            {
+                                activeTab === 'blogs' ? 'Blog Management' : 
+                                activeTab === 'messages' ? 'Candidate Inquiries' : 
+                                activeTab === 'reviews' ? 'Success Stories' :
+                                activeTab === 'countries' ? 'Study Destinations' :
+                                'Global Settings'
+                            }
                         </h2>
                         <p className="text-gray-500 text-sm">
-                            {activeTab === 'blogs'
-                                ? `Manage your educational updates and success stories (${posts.length} posts)`
-                                : activeTab === 'messages'
-                                    ? `Review and respond to student messages (${messages.length} total)`
-                                    : `Approve or manage student testimonials (${reviews.length} total)`}
+                            {
+                                activeTab === 'blogs' ? `Manage your educational updates and success stories (${posts.length} posts)` : 
+                                activeTab === 'messages' ? `Review and respond to student messages (${messages.length} total)` :
+                                activeTab === 'reviews' ? `Approve or manage student testimonials (${reviews.length} total)` :
+                                activeTab === 'countries' ? `Manage available study abroad countries (${countries.length} total)` :
+                                'Update site-wide contact information and office hours'
+                            }
                         </p>
-
                     </div>
+
+                    {activeTab === 'countries' && (
+                        <Button onClick={startCreateCountry} variant="primary" className="shadow-lg">
+                            <Plus className="w-5 h-5 mr-2" />
+                            Add Country
+                        </Button>
+                    )}
+
 
                     {activeTab === 'blogs' && (
                         <Button onClick={startCreate} variant="primary" className="shadow-lg">
@@ -581,7 +690,250 @@ const Dashboard = () => {
                         </div>
                     </div>
                 )}
+                {activeTab === 'countries' && (
+                    <div className="bg-white rounded-2xl shadow-sm border border-gray-100 overflow-hidden">
+                        <div className="overflow-x-auto">
+                            <table className="w-full text-left">
+                                <thead className="bg-gray-50/50 text-gray-400 text-xs uppercase font-bold tracking-wider">
+                                    <tr>
+                                        <th className="px-6 py-4">Country</th>
+                                        <th className="px-6 py-4 text-center">Order</th>
+                                        <th className="px-6 py-4 text-right">Actions</th>
+                                    </tr>
+                                </thead>
+                                <tbody className="divide-y divide-gray-50">
+                                    {countries.map((country) => (
+                                        <tr key={country.id} className="hover:bg-blue-50/30 transition-colors">
+                                            <td className="px-6 py-4">
+                                                <div className="flex items-center space-x-4">
+                                                    <span className="text-3xl">{country.flag}</span>
+                                                    <div>
+                                                        <div className="font-bold text-gray-900">{country.name}</div>
+                                                        <div className="text-xs text-gray-500 truncate max-w-md">{country.description}</div>
+                                                    </div>
+                                                </div>
+                                            </td>
+                                            <td className="px-6 py-4 text-center text-gray-500 font-mono text-sm">{country.order_index}</td>
+                                            <td className="px-6 py-4 text-right">
+                                                <div className="flex justify-end space-x-2">
+                                                    <button
+                                                        onClick={() => startEditCountry(country)}
+                                                        className="p-2 text-blue-600 hover:bg-blue-100 rounded-lg transition-colors"
+                                                        title="Edit"
+                                                    >
+                                                        <Edit className="w-4 h-4" />
+                                                    </button>
+                                                    <button
+                                                        onClick={() => handleDeleteCountry(country.id)}
+                                                        className="p-2 text-red-600 hover:bg-red-100 rounded-lg transition-colors"
+                                                        title="Delete"
+                                                    >
+                                                        <Trash2 className="w-4 h-4" />
+                                                    </button>
+                                                </div>
+                                            </td>
+                                        </tr>
+                                    ))}
+                                </tbody>
+                            </table>
+                        </div>
+                    </div>
+                )}
+
+                {activeTab === 'settings' && (
+                    <div className="max-w-3xl bg-white rounded-2xl shadow-sm border border-gray-100 p-8">
+                        <form onSubmit={handleUpdateSettings} className="space-y-6">
+                            <div className="grid md:grid-cols-2 gap-6">
+                                <div>
+                                    <label className="block text-sm font-medium text-gray-700 mb-2">Phone Number</label>
+                                    <input
+                                        type="text"
+                                        value={settings.phone}
+                                        onChange={(e) => setSettings({ ...settings, phone: e.target.value })}
+                                        className="w-full px-4 py-3 rounded-xl border border-gray-300 focus:outline-none focus:ring-2 focus:ring-secondary-blue"
+                                    />
+                                </div>
+                                <div>
+                                    <label className="block text-sm font-medium text-gray-700 mb-2">Email Address</label>
+                                    <input
+                                        type="email"
+                                        value={settings.email}
+                                        onChange={(e) => setSettings({ ...settings, email: e.target.value })}
+                                        className="w-full px-4 py-3 rounded-xl border border-gray-300 focus:outline-none focus:ring-2 focus:ring-secondary-blue"
+                                    />
+                                </div>
+                                <div className="md:col-span-2">
+                                    <label className="block text-sm font-medium text-gray-700 mb-2">Office Address</label>
+                                    <input
+                                        type="text"
+                                        value={settings.address}
+                                        onChange={(e) => setSettings({ ...settings, address: e.target.value })}
+                                        className="w-full px-4 py-3 rounded-xl border border-gray-300 focus:outline-none focus:ring-2 focus:ring-secondary-blue"
+                                    />
+                                </div>
+                                <div className="md:col-span-2">
+                                    <label className="block text-sm font-medium text-gray-700 mb-2">Google Maps Embed URL</label>
+                                    <input
+                                        type="text"
+                                        value={settings.google_maps_url}
+                                        onChange={(e) => setSettings({ ...settings, google_maps_url: e.target.value })}
+                                        className="w-full px-4 py-3 rounded-xl border border-gray-300 focus:outline-none focus:ring-2 focus:ring-secondary-blue"
+                                    />
+                                </div>
+                                <div>
+                                    <label className="block text-sm font-medium text-gray-700 mb-2">Instagram Username (@...)</label>
+                                    <input
+                                        type="text"
+                                        value={settings.instagram_username}
+                                        onChange={(e) => setSettings({ ...settings, instagram_username: e.target.value })}
+                                        className="w-full px-4 py-3 rounded-xl border border-gray-300 focus:outline-none focus:ring-2 focus:ring-secondary-blue"
+                                    />
+                                </div>
+                                <div>
+                                    <label className="block text-sm font-medium text-gray-700 mb-2">Instagram URL</label>
+                                    <input
+                                        type="text"
+                                        value={settings.instagram_url}
+                                        onChange={(e) => setSettings({ ...settings, instagram_url: e.target.value })}
+                                        className="w-full px-4 py-3 rounded-xl border border-gray-300 focus:outline-none focus:ring-2 focus:ring-secondary-blue"
+                                    />
+                                </div>
+                                <div>
+                                    <label className="block text-sm font-medium text-gray-700 mb-2">Office Hours</label>
+                                    <input
+                                        type="text"
+                                        value={settings.office_hours}
+                                        onChange={(e) => setSettings({ ...settings, office_hours: e.target.value })}
+                                        className="w-full px-4 py-3 rounded-xl border border-gray-300 focus:outline-none focus:ring-2 focus:ring-secondary-blue"
+                                        placeholder="e.g., 10am to 8pm"
+                                    />
+                                </div>
+                            </div>
+                            <div className="flex justify-end pt-4 border-t border-gray-50">
+                                <Button type="submit" variant="primary">
+                                    <Save className="w-5 h-5 mr-2" />
+                                    Save All Settings
+                                </Button>
+                            </div>
+                        </form>
+                    </div>
+                )}
             </main>
+
+            {/* Country Edit Modal */}
+            {isEditingCountry && (
+                <div className="fixed inset-0 bg-black/60 backdrop-blur-sm z-50 flex items-center justify-center p-4">
+                    <div className="bg-white rounded-3xl w-full max-w-3xl max-h-[90vh] overflow-y-auto shadow-2xl">
+                        <div className="p-8">
+                            <div className="flex justify-between items-center mb-8">
+                                <h3 className="text-2xl font-bold text-secondary-blue">
+                                    {currentCountry ? 'Edit Country' : 'Add New Destination'}
+                                </h3>
+                                <button onClick={() => setIsEditingCountry(false)} className="p-2 hover:bg-gray-100 rounded-full">
+                                    <X className="w-6 h-6 text-gray-400" />
+                                </button>
+                            </div>
+
+                            <form onSubmit={handleSaveCountry} className="space-y-6">
+                                <div className="grid md:grid-cols-2 gap-6">
+                                    <div>
+                                        <label className="block text-sm font-medium text-gray-700 mb-2">Country Name</label>
+                                        <input
+                                            type="text"
+                                            value={countryForm.name}
+                                            onChange={(e) => setCountryForm({ ...countryForm, name: e.target.value })}
+                                            className="w-full px-4 py-3 rounded-xl border border-gray-300 focus:outline-none focus:ring-2 focus:ring-secondary-blue"
+                                            required
+                                        />
+                                    </div>
+                                    <div>
+                                        <label className="block text-sm font-medium text-gray-700 mb-2">Flag Emoji</label>
+                                        <input
+                                            type="text"
+                                            value={countryForm.flag}
+                                            onChange={(e) => setCountryForm({ ...countryForm, flag: e.target.value })}
+                                            className="w-full px-4 py-3 rounded-xl border border-gray-300 focus:outline-none focus:ring-2 focus:ring-secondary-blue font-emoji text-2xl"
+                                            placeholder="🇨🇦"
+                                            required
+                                        />
+                                    </div>
+                                </div>
+
+                                <div>
+                                    <label className="block text-sm font-medium text-gray-700 mb-2">Short Description</label>
+                                    <textarea
+                                        value={countryForm.description}
+                                        onChange={(e) => setCountryForm({ ...countryForm, description: e.target.value })}
+                                        rows="2"
+                                        className="w-full px-4 py-3 rounded-xl border border-gray-300 focus:outline-none focus:ring-2 focus:ring-secondary-blue"
+                                        required
+                                    ></textarea>
+                                </div>
+
+                                <div className="grid md:grid-cols-2 gap-6">
+                                    <div>
+                                        <label className="block text-sm font-medium text-gray-700 mb-2">Why Choose This Country? (one per line)</label>
+                                        <textarea
+                                            value={countryForm.highlights}
+                                            onChange={(e) => setCountryForm({ ...countryForm, highlights: e.target.value })}
+                                            rows="5"
+                                            className="w-full px-4 py-3 rounded-xl border border-gray-300 focus:outline-none focus:ring-2 focus:ring-secondary-blue text-sm"
+                                            placeholder="Post-graduation work permit...\nPathway to PR..."
+                                            required
+                                        ></textarea>
+                                    </div>
+                                    <div>
+                                        <label className="block text-sm font-medium text-gray-700 mb-2">Popular Items/Universities (one per line)</label>
+                                        <textarea
+                                            value={countryForm.popular_items}
+                                            onChange={(e) => setCountryForm({ ...countryForm, popular_items: e.target.value })}
+                                            rows="5"
+                                            className="w-full px-4 py-3 rounded-xl border border-gray-300 focus:outline-none focus:ring-2 focus:ring-secondary-blue text-sm"
+                                            placeholder="University of Toronto\nMcGill University"
+                                            required
+                                        ></textarea>
+                                    </div>
+                                </div>
+
+                                <div className="grid md:grid-cols-2 gap-6">
+                                    <div>
+                                        <label className="block text-sm font-medium text-gray-700 mb-2">Average Tuition</label>
+                                        <input
+                                            type="text"
+                                            value={countryForm.average_tuition}
+                                            onChange={(e) => setCountryForm({ ...countryForm, average_tuition: e.target.value })}
+                                            className="w-full px-4 py-3 rounded-xl border border-gray-300 focus:outline-none focus:ring-2 focus:ring-secondary-blue"
+                                            placeholder="e.g., $15,000 - $35,000 CAD/year"
+                                            required
+                                        />
+                                    </div>
+                                    <div>
+                                        <label className="block text-sm font-medium text-gray-700 mb-2">Display Order</label>
+                                        <input
+                                            type="number"
+                                            value={countryForm.order_index}
+                                            onChange={(e) => setCountryForm({ ...countryForm, order_index: parseInt(e.target.value) })}
+                                            className="w-full px-4 py-3 rounded-xl border border-gray-300 focus:outline-none focus:ring-2 focus:ring-secondary-blue"
+                                            required
+                                        />
+                                    </div>
+                                </div>
+
+                                <div className="flex justify-end space-x-4 pt-6 border-t border-gray-100">
+                                    <Button type="button" variant="outline" onClick={() => setIsEditingCountry(false)}>
+                                        Cancel
+                                    </Button>
+                                    <Button type="submit" variant="primary">
+                                        <Save className="w-5 h-5 mr-2" />
+                                        Save Destination
+                                    </Button>
+                                </div>
+                            </form>
+                        </div>
+                    </div>
+                </div>
+            )}
+
 
         </div>
     );

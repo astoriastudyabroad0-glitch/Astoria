@@ -5,7 +5,9 @@ import Card from '../components/Card';
 import PromoCard from '../components/PromoCard';
 import SectionWrapper from '../components/SectionWrapper';
 import { ReviewService } from '../services/ReviewService';
+import { CountryService } from '../services/CountryService';
 import { ChevronLeft, ChevronRight, Quote } from 'lucide-react';
+
 
 import heroImage from '../assets/hero.png';
 import maltaImage from '../assets/study-malta.png';
@@ -40,33 +42,7 @@ const Home = () => {
         },
     ];
 
-    const countries = [
-        {
-            name: 'Canada',
-            image: '/images/canada-flag.png',
-            description: 'World-class education with post-study work opportunities',
-        },
-        {
-            name: 'Australia',
-            image: '/images/australia-flag.png',
-            description: 'High quality of life and excellent universities',
-        },
-        {
-            name: 'United Kingdom',
-            image: '/images/uk-flag.png',
-            description: 'Historic institutions and diverse cultural experience',
-        },
-        {
-            name: 'United States',
-            image: '/images/usa-flag.png',
-            description: 'Top-ranked universities and cutting-edge research',
-        },
-        {
-            name: 'Europe',
-            image: '/images/europe-flag.png',
-            description: 'Affordable education and rich cultural heritage',
-        },
-    ];
+
 
     const whyChooseUs = [
         {
@@ -92,20 +68,26 @@ const Home = () => {
     ];
 
     const [testimonials, setTestimonials] = useState([]);
+    const [countries, setCountries] = useState([]);
     const [currentIndex, setCurrentIndex] = useState(0);
     const [isAnimating, setIsAnimating] = useState(false);
 
     useEffect(() => {
-        const fetchReviews = async () => {
+        const fetchData = async () => {
             try {
-                const data = await ReviewService.getApproved();
-                setTestimonials(data);
+                const [reviewsData, countriesData] = await Promise.all([
+                    ReviewService.getApproved(),
+                    CountryService.getAll()
+                ]);
+                setTestimonials(reviewsData);
+                setCountries(countriesData.slice(0, 3));
             } catch (err) {
-                console.error('Error fetching reviews:', err);
+                console.error('Error fetching home data:', err);
             }
         };
-        fetchReviews();
+        fetchData();
     }, []);
+
 
     // Auto-slide logic
     useEffect(() => {

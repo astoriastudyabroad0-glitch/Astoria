@@ -1,10 +1,24 @@
-import React from 'react';
+import React, { useState, useEffect } from 'react';
 import { Link } from 'react-router-dom';
 import { Facebook, Instagram, Mail, Phone, MapPin, Clock } from 'lucide-react';
+import { SettingsService } from '../services/SettingsService';
 import logo from '../assets/logo.png';
 
 const Footer = () => {
     const currentYear = new Date().getFullYear();
+    const [settings, setSettings] = useState(null);
+
+    useEffect(() => {
+        const fetchSettings = async () => {
+            try {
+                const data = await SettingsService.getSettings();
+                setSettings(data);
+            } catch (err) {
+                console.error('Error fetching footer settings:', err);
+            }
+        };
+        fetchSettings();
+    }, []);
 
     return (
         <footer className="bg-secondary-blue text-white">
@@ -80,36 +94,36 @@ const Footer = () => {
                         <ul className="space-y-3">
                             <li className="flex items-start space-x-2">
                                 <Phone className="w-5 h-5 text-primary-red flex-shrink-0 mt-0.5" />
-                                <a href="tel:01913354956" className="text-gray-300 hover:text-primary-red transition-colors">
-                                    01913-354956
+                                <a href={`tel:${settings?.phone?.replace(/-/g, '') || ''}`} className="text-gray-300 hover:text-primary-red transition-colors">
+                                    {settings?.phone || 'Loading...'}
                                 </a>
                             </li>
                             <li className="flex items-start space-x-2">
                                 <MapPin className="w-5 h-5 text-primary-red flex-shrink-0 mt-0.5" />
                                 <a
-                                    href="https://www.google.com/maps/search/?api=1&query=24.387602,88.607993"
+                                    href={settings?.google_maps_url || '#'}
                                     target="_blank"
                                     rel="noopener noreferrer"
                                     className="text-gray-300 hover:text-primary-red transition-colors text-sm"
                                 >
-                                    Airport Rd, Ahmednogor 6203
+                                    {settings?.address || 'Loading...'}
                                 </a>
                             </li>
                             <li className="flex items-start space-x-2">
                                 <Clock className="w-5 h-5 text-primary-red flex-shrink-0 mt-0.5" />
                                 <span className="text-gray-300 text-sm">
-                                    Open hours: 10am to 8pm
+                                    Open hours: {settings?.office_hours || 'Loading...'}
                                 </span>
                             </li>
                             <li className="flex items-start space-x-2">
                                 <Instagram className="w-5 h-5 text-primary-red flex-shrink-0 mt-0.5" />
                                 <a
-                                    href="https://instagram.com/astoria_study_abroad"
+                                    href={settings?.instagram_url || '#'}
                                     target="_blank"
                                     rel="noopener noreferrer"
                                     className="text-gray-300 hover:text-primary-red transition-colors"
                                 >
-                                    @astoria_study_abroad
+                                    {settings?.instagram_username || 'Loading...'}
                                 </a>
                             </li>
                         </ul>
@@ -117,7 +131,7 @@ const Footer = () => {
                         {/* Social Links */}
                         <div className="flex space-x-4 mt-6">
                             <a
-                                href="https://instagram.com/astoria_study_abroad"
+                                href={settings?.instagram_url || '#'}
                                 target="_blank"
                                 rel="noopener noreferrer"
                                 className="w-10 h-10 bg-white bg-opacity-10 rounded-lg flex items-center justify-center hover:bg-primary-red transition-colors"
@@ -135,7 +149,7 @@ const Footer = () => {
                                 <Facebook className="w-5 h-5" />
                             </a>
                             <a
-                                href="mailto:info@astoriastudyabroad.com"
+                                href={`mailto:${settings?.email || ''}`}
                                 className="w-10 h-10 bg-white bg-opacity-10 rounded-lg flex items-center justify-center hover:bg-primary-red transition-colors"
                                 aria-label="Email"
                             >
@@ -155,3 +169,4 @@ const Footer = () => {
 };
 
 export default Footer;
+

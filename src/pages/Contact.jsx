@@ -4,11 +4,15 @@ import SectionWrapper from '../components/SectionWrapper';
 import Button from '../components/Button';
 import { MessageService } from '../services/MessageService';
 import { ReviewService } from '../services/ReviewService';
+import { SettingsService } from '../services/SettingsService';
 import { Star } from 'lucide-react';
 
 
+
 const Contact = () => {
+    const [settings, setSettings] = useState(null);
     const [formData, setFormData] = useState({
+
         name: '',
         phone: '',
         email: '',
@@ -20,6 +24,19 @@ const Contact = () => {
 
     const [errors, setErrors] = useState({});
     const [submitted, setSubmitted] = useState(false);
+
+    useEffect(() => {
+        const fetchSettings = async () => {
+            try {
+                const data = await SettingsService.getSettings();
+                setSettings(data);
+            } catch (err) {
+                console.error('Error fetching contact settings:', err);
+            }
+        };
+        fetchSettings();
+    }, []);
+
     const [reviewSubmitted, setReviewSubmitted] = useState(false);
 
     const [reviewData, setReviewData] = useState({
@@ -138,32 +155,33 @@ const Contact = () => {
     };
 
 
-    const contactInfo = [
+    const contactCards = [
         {
             icon: Phone,
             title: 'Phone',
-            content: '01913-354956',
-            link: 'tel:01913354956',
+            value: settings?.phone || '01913-354956',
+            link: `tel:${settings?.phone?.replace(/-/g, '') || '01913354956'}`,
         },
         {
             icon: MapPin,
             title: 'Address',
-            content: 'Airport Rd, Ahmednogor 6203',
-            link: 'https://www.google.com/maps/search/?api=1&query=24.387602,88.607993',
+            value: settings?.address || 'Airport Rd, Ahmednogor 6203',
+            link: settings?.google_maps_url || 'https://www.google.com/maps/search/?api=1&query=24.387602,88.607993',
         },
         {
             icon: Instagram,
             title: 'Instagram',
-            content: '@astoria_study_abroad',
-            link: 'https://instagram.com/astoria_study_abroad',
+            value: settings?.instagram_username || '@astoria_study_abroad',
+            link: settings?.instagram_url || 'https://instagram.com/astoria_study_abroad',
         },
         {
             icon: Mail,
             title: 'Email',
-            content: 'info@astoriastudyabroad.com',
-            link: 'mailto:info@astoriastudyabroad.com',
+            value: settings?.email || 'info@astoriastudyabroad.com',
+            link: `mailto:${settings?.email || 'info@astoriastudyabroad.com'}`,
         },
     ];
+
 
     const countries = ['Canada', 'Australia', 'United Kingdom', 'United States', 'Europe', 'Other'];
 
