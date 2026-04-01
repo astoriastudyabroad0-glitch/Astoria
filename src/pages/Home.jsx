@@ -52,6 +52,14 @@ const Home = () => {
     const [countries, setCountries] = useState([]);
     const [currentIndex, setCurrentIndex] = useState(0);
     const [isAnimating, setIsAnimating] = useState(false);
+    const [showPopup, setShowPopup] = useState(false);
+
+    useEffect(() => {
+        const timer = setTimeout(() => {
+            setShowPopup(true);
+        }, 3000); // Show popup after 3 seconds
+        return () => clearTimeout(timer);
+    }, []);
 
     useEffect(() => {
         const fetchData = async () => {
@@ -103,8 +111,45 @@ const Home = () => {
         return visible;
     };
 
+    const ConsultancyPopup = () => {
+        if (!showPopup) return null;
+        return (
+            <div className="fixed inset-0 z-[100] flex items-center justify-center p-4 bg-secondary-blue/80 backdrop-blur-md animate-fade-in">
+                <div className="bg-white rounded-[2rem] shadow-2xl max-w-lg w-full overflow-hidden relative animate-fade-in-up">
+                    <button 
+                        onClick={() => setShowPopup(false)}
+                        className="absolute top-6 right-6 text-gray-400 hover:text-secondary-blue transition-colors z-10"
+                    >
+                        <ChevronRight className="w-8 h-8 rotate-45" />
+                    </button>
+                    
+                    <div className="flex flex-col md:flex-row h-full">
+                        <div className="md:w-full p-8 md:p-12 text-center md:text-left">
+                            <div className="w-16 h-16 bg-primary-red/10 rounded-2xl flex items-center justify-center text-primary-red mb-6 mx-auto md:mx-0">
+                                <Phone size={32} />
+                            </div>
+                            <h2 className="text-3xl md:text-4xl font-bold font-poppins text-secondary-blue mb-4 leading-tight">
+                                Book Your Free <br />Consultancy
+                            </h2>
+                            <p className="text-gray-600 mb-8 italic">
+                                "95% of our successful students started with this first consultation."
+                            </p>
+                            <div className="space-y-4">
+                                <Button to="/contact" variant="primary" className="w-full py-5 text-xl" onClick={() => setShowPopup(false)}>
+                                    Secure My Spot
+                                </Button>
+                                <p className="text-xs text-center text-gray-400">Available for limited slots only this week.</p>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        );
+    };
+
     return (
         <div className="overflow-x-hidden">
+            <ConsultancyPopup />
             {/* Hero Section */}
             <section className="relative min-h-screen flex items-center pt-20 bg-secondary-blue overflow-hidden">
                 {/* Abstract Decorative Elements */}
@@ -148,30 +193,18 @@ const Home = () => {
                         </div>
 
                         <div className="relative hidden lg:block animate-fade-in-up" style={{ animationDelay: '0.2s' }}>
-                            <div className="relative z-10 rounded-3xl overflow-hidden shadow-2xl border-8 border-white/5">
+                            <div className="relative z-10 rounded-3xl overflow-hidden shadow-2xl border-8 border-white/5 mx-auto lg:mx-0 max-w-lg lg:max-w-none">
                                 <img
                                     src={heroImage}
                                     alt="Expert Counseling Session"
                                     className="w-full h-auto"
                                 />
                             </div>
-                            {/* Floating Action Card */}
-                            <div className="absolute -bottom-10 -left-10 glass p-6 rounded-2xl shadow-2xl max-w-xs z-20">
-                                <div className="flex items-center mb-4">
-                                    <div className="w-12 h-12 bg-primary-red rounded-xl flex items-center justify-center text-white mr-4">
-                                        <TrendingUp />
-                                    </div>
-                                    <div>
-                                        <p className="text-xs text-gray-500 uppercase font-bold tracking-wider">Visa Success</p>
-                                        <p className="text-xl font-bold text-secondary-blue">98.4% Recent</p>
-                                    </div>
-                                </div>
-                                <p className="text-sm text-gray-600">Our meticulous documentation process ensures your dreams stay on track.</p>
-                            </div>
                         </div>
                     </div>
                 </div>
             </section>
+
 
             {/* Stats / Trust Bar */}
             <div className="bg-white py-12 border-b border-gray-100">
