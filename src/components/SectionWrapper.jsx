@@ -7,9 +7,11 @@ const SectionWrapper = ({
     id
 }) => {
     const bgClasses = {
-        white: 'bg-white',
-        light: 'bg-light',
-        dark: 'bg-secondary-blue text-white',
+        white: 'bg-white text-dark',
+        light: 'bg-light text-dark',
+        dark: 'bg-dark text-white',
+        primary: 'bg-primary-red text-white',
+        secondary: 'bg-secondary-blue text-white',
     };
 
     return (
@@ -23,5 +25,6 @@ const SectionWrapper = ({
         </section>
     );
 };
+
 
 export default SectionWrapper;

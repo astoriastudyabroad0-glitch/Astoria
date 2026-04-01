@@ -1,12 +1,16 @@
 import React, { useState, useEffect } from 'react';
-import { GraduationCap, FileCheck, Plane, Home as HomeIcon, Users, Award, Star, Globe, BookOpen, Shield } from 'lucide-react';
+import { 
+    GraduationCap, FileCheck, Plane, Home as HomeIcon, Users, 
+    Award, Star, Globe, BookOpen, Shield, TrendingUp, 
+    ChevronRight, ChevronLeft, Quote, CheckCircle, Phone 
+} from 'lucide-react';
+import { Link } from 'react-router-dom';
 import Button from '../components/Button';
 import Card from '../components/Card';
 import PromoCard from '../components/PromoCard';
 import SectionWrapper from '../components/SectionWrapper';
 import { ReviewService } from '../services/ReviewService';
 import { CountryService } from '../services/CountryService';
-import { ChevronLeft, ChevronRight, Quote } from 'lucide-react';
 
 
 import heroImage from '../assets/hero.png';
@@ -16,55 +20,32 @@ import nzImage from '../assets/study-new-zealand.png';
 const Home = () => {
     const services = [
         {
+            icon: Shield,
+            title: 'Admission Excellence',
+            description: 'Navigate the complex world of global admissions with our proven expert strategies.',
+        },
+        {
             icon: FileCheck,
-            title: 'Admission Support',
-            description: 'Expert guidance through the entire admission process to top universities worldwide.',
+            title: 'Visa Mastery',
+            description: 'Highest success rates with comprehensive documentation and interview preparation.',
+        },
+        {
+            icon: Award,
+            title: 'Scholarship Success',
+            description: 'Maximize your funding opportunities with our dedicated scholarship scouting.',
         },
         {
             icon: Plane,
-            title: 'Visa Support',
-            description: 'Complete visa application assistance with high success rates.',
-        },
-        {
-            icon: Award,
-            title: 'Scholarship Help',
-            description: 'Find and apply for scholarships to make your education affordable.',
-        },
-        {
-            icon: HomeIcon,
-            title: 'Accommodation',
-            description: 'Help finding safe and comfortable housing near your university.',
-        },
-        {
-            icon: Users,
-            title: 'Post-Arrival Support',
-            description: 'Continued support after you arrive to help you settle in smoothly.',
+            title: 'Departure Ready',
+            description: 'From pre-departure briefings to airport pickups, we ensure you settle in smoothly.',
         },
     ];
 
-
-
-    const whyChooseUs = [
-        {
-            icon: Shield,
-            title: 'Trusted Expertise',
-            description: 'Years of experience helping students achieve their dreams',
-        },
-        {
-            icon: Globe,
-            title: 'Global Network',
-            description: 'Partnerships with universities across the world',
-        },
-        {
-            icon: BookOpen,
-            title: 'Personalized Guidance',
-            description: 'Tailored support for your unique educational goals',
-        },
-        {
-            icon: Award,
-            title: 'High Success Rate',
-            description: '95% visa approval rate and countless success stories',
-        },
+    const stats = [
+        { label: 'Successful Placements', value: '1,200+' },
+        { label: 'Visa Success Rate', value: '98%' },
+        { label: 'Partner Institutions', value: '250+' },
+        { label: 'Years of Excellence', value: '10+' },
     ];
 
     const [testimonials, setTestimonials] = useState([]);
@@ -88,14 +69,13 @@ const Home = () => {
         fetchData();
     }, []);
 
-
     // Auto-slide logic
     useEffect(() => {
         if (testimonials.length <= 3) return;
         
         const interval = setInterval(() => {
             nextSlide();
-        }, 5000);
+        }, 6000);
         return () => clearInterval(interval);
     }, [testimonials.length, currentIndex]);
 
@@ -116,304 +96,281 @@ const Home = () => {
     const getVisibleTestimonials = () => {
         if (testimonials.length === 0) return [];
         const visible = [];
-        for (let i = 0; i < Math.min(testimonials.length, 3); i++) {
+        const count = window.innerWidth < 768 ? 1 : (window.innerWidth < 1024 ? 2 : 3);
+        for (let i = 0; i < Math.min(testimonials.length, count); i++) {
             visible.push(testimonials[(currentIndex + i) % testimonials.length]);
         }
         return visible;
     };
 
-
     return (
-        <div className="pt-20">
+        <div className="overflow-x-hidden">
             {/* Hero Section */}
-            <section className="relative bg-gradient-to-br from-secondary-blue via-secondary-blue to-blue-900 text-white overflow-hidden">
-                <div className="absolute inset-0 opacity-10">
-                    <div className="absolute top-0 right-0 w-1/2 h-full bg-primary-red transform skew-x-12"></div>
-                </div>
-
-                <div className="container-custom py-20 md:py-32 relative z-10">
-                    <div className="grid md:grid-cols-2 gap-12 items-center">
-                        <div>
-                            <h1 className="font-poppins font-bold text-4xl md:text-6xl mb-6 leading-tight">
-                                Your Gateway to
-                                <span className="text-primary-red"> International Education</span>
+            <section className="relative min-h-screen flex items-center pt-20 bg-secondary-blue overflow-hidden">
+                {/* Abstract Decorative Elements */}
+                <div className="absolute top-0 right-0 w-1/3 h-full bg-primary-red/10 -skew-x-12 transform translate-x-20"></div>
+                <div className="absolute bottom-0 left-0 w-64 h-64 bg-primary-red/20 rounded-full blur-3xl -translate-x-1/2 translate-y-1/2"></div>
+                
+                <div className="container-custom relative z-10 py-20">
+                    <div className="grid lg:grid-cols-2 gap-16 items-center">
+                        <div className="animate-fade-in-up">
+                            <div className="inline-flex items-center px-4 py-2 rounded-full bg-white/10 border border-white/20 text-white text-sm font-semibold mb-6 backdrop-blur-sm">
+                                <span className="w-2 h-2 rounded-full bg-primary-red mr-2 animate-pulse"></span>
+                                Currently Accepting Intake 2025 Applications
+                            </div>
+                            <h1 className="font-poppins font-bold text-5xl md:text-7xl text-white mb-8 leading-[1.1]">
+                                Master Your <br />
+                                <span className="text-primary-red">Global Future</span>
                             </h1>
-                            <p className="text-xl mb-8 text-gray-200">
-                                Expert guidance for studying in Canada, Australia, UK, USA, and Europe.
-                                Let us help you achieve your academic dreams.
+                            <p className="text-xl text-gray-300 mb-10 max-w-xl leading-relaxed">
+                                Join over 1,200 Bangladeshi students who successfully started their international education journey with Astoria's expert guidance.
                             </p>
-                            <div className="flex flex-wrap gap-4">
-                                <Button to="/contact" variant="primary">
-                                    Get Started
+                            <div className="flex flex-wrap gap-5">
+                                <Button to="/contact" variant="primary" className="px-10">
+                                    Start Free Assessment
                                 </Button>
-                                <Button to="/services" variant="outline" className="border-white text-white hover:bg-white hover:text-secondary-blue">
-                                    Our Services
+                                <Button to="/countries" variant="white" className="px-10">
+                                    Browse Destinations
                                 </Button>
+                            </div>
+                            
+                            {/* Trust Badge */}
+                            <div className="mt-12 flex items-center space-x-6 text-white/60 text-sm">
+                                <div className="flex -space-x-3">
+                                    {[1, 2, 3, 4].map(i => (
+                                        <div key={i} className="w-10 h-10 rounded-full border-2 border-secondary-blue bg-gray-300 overflow-hidden">
+                                            <img src={`https://i.pravatar.cc/100?img=${i+10}`} alt="Student" />
+                                        </div>
+                                    ))}
+                                </div>
+                                <p><span className="text-white font-bold text-lg">4.9/5</span> rating from verified Astoria students</p>
                             </div>
                         </div>
 
-                        <div className="hidden md:block">
-                            <div className="relative">
-                                <div className="absolute -top-4 -left-4 w-72 h-72 bg-primary-red rounded-full opacity-20 blur-3xl"></div>
-                                <div className="relative">
-                                    <img
-                                        src={heroImage}
-                                        alt="Study Abroad Students"
-                                        className="w-full h-auto rounded-2xl shadow-2xl"
-                                    />
+                        <div className="relative hidden lg:block animate-fade-in-up" style={{ animationDelay: '0.2s' }}>
+                            <div className="relative z-10 rounded-3xl overflow-hidden shadow-2xl border-8 border-white/5">
+                                <img
+                                    src={heroImage}
+                                    alt="Expert Counseling Session"
+                                    className="w-full h-auto"
+                                />
+                            </div>
+                            {/* Floating Action Card */}
+                            <div className="absolute -bottom-10 -left-10 glass p-6 rounded-2xl shadow-2xl max-w-xs z-20">
+                                <div className="flex items-center mb-4">
+                                    <div className="w-12 h-12 bg-primary-red rounded-xl flex items-center justify-center text-white mr-4">
+                                        <TrendingUp />
+                                    </div>
+                                    <div>
+                                        <p className="text-xs text-gray-500 uppercase font-bold tracking-wider">Visa Success</p>
+                                        <p className="text-xl font-bold text-secondary-blue">98.4% Recent</p>
+                                    </div>
                                 </div>
+                                <p className="text-sm text-gray-600">Our meticulous documentation process ensures your dreams stay on track.</p>
                             </div>
                         </div>
                     </div>
                 </div>
             </section>
 
-            {/* About Section */}
-            <SectionWrapper background="white">
-                <div className="text-center max-w-3xl mx-auto">
-                    <h2 className="font-poppins font-bold text-3xl md:text-4xl mb-6 text-secondary-blue">
-                        About Astoria Study Abroad
-                    </h2>
-                    <p className="text-lg text-gray-700 mb-4">
-                        We are a dedicated team of education consultants committed to helping students
-                        from Bangladesh pursue their higher education dreams abroad. With years of experience
-                        and a proven track record, we provide comprehensive support throughout your journey.
-                    </p>
-                    <p className="text-lg text-gray-700">
-                        From choosing the right university to settling in your new country, we're with you every step of the way.
-                    </p>
+            {/* Stats / Trust Bar */}
+            <div className="bg-white py-12 border-b border-gray-100">
+                <div className="container-custom">
+                    <div className="grid grid-cols-2 md:grid-cols-4 gap-8">
+                        {stats.map((stat, i) => (
+                            <div key={i} className="text-center border-r last:border-0 border-gray-100 px-4">
+                                <p className="text-4xl font-bold text-secondary-blue mb-1">{stat.value}</p>
+                                <p className="text-sm text-gray-500 font-medium uppercase tracking-widest">{stat.label}</p>
+                            </div>
+                        ))}
+                    </div>
                 </div>
-            </SectionWrapper>
+            </div>
 
             {/* Services Section */}
             <SectionWrapper background="light">
-                <div className="text-center mb-12">
-                    <h2 className="font-poppins font-bold text-3xl md:text-4xl mb-4 text-secondary-blue">
-                        Our Services
-                    </h2>
-                    <p className="text-lg text-gray-600">
-                        Comprehensive support for your study abroad journey
-                    </p>
+                <div className="flex flex-col md:flex-row md:items-end justify-between mb-16 gap-6">
+                    <div className="max-w-2xl">
+                        <p className="text-primary-red font-bold text-sm uppercase tracking-widest mb-4">What We Offer</p>
+                        <h2 className="text-4xl md:text-5xl font-poppins font-bold text-secondary-blue leading-tight text-left">
+                            Comprehensive Path to <br />International Success
+                        </h2>
+                    </div>
+                    <Button to="/services" variant="outline">View All Services</Button>
                 </div>
 
-                <div className="grid md:grid-cols-2 lg:grid-cols-3 gap-8">
+                <div className="grid md:grid-cols-2 lg:grid-cols-4 gap-8">
                     {services.map((service, index) => (
                         <Card
                             key={index}
                             icon={service.icon}
                             title={service.title}
                             description={service.description}
+                            className="bg-white h-full"
                         />
                     ))}
                 </div>
-
-                <div className="text-center mt-12">
-                    <Button to="/services" variant="primary">
-                        View All Services
-                    </Button>
-                </div>
             </SectionWrapper>
 
-            {/* Countries Section */}
+            {/* Destinations Highlight */}
             <SectionWrapper background="white">
-                <div className="text-center mb-12">
-                    <h2 className="font-poppins font-bold text-3xl md:text-4xl mb-4 text-secondary-blue">
-                        Study Destinations
-                    </h2>
-                    <p className="text-lg text-gray-600">
-                        Explore world-class education opportunities
+                <div className="text-center mb-16">
+                    <h2 className="text-4xl md:text-5xl font-bold text-secondary-blue mb-6">Top Study Destinations</h2>
+                    <p className="text-gray-600 text-lg max-w-2xl mx-auto leading-relaxed">
+                        Explore prestigious universities and vibrant cultures across the globe. We help you find the perfect match for your academic profile.
                     </p>
                 </div>
 
-                <div className="grid md:grid-cols-2 lg:grid-cols-3 gap-8">
-                    {countries.slice(0, 3).map((country, index) => (
-                        <Card
-                            key={index}
-                            title={country.name}
-                            description={country.description}
-                        >
-                            <Button to="/countries" variant="outline" className="w-full">
-                                Learn More
-                            </Button>
-                        </Card>
-                    ))}
-                </div>
-
-                <div className="text-center mt-12">
-                    <Button to="/countries" variant="primary">
-                        View All Destinations
-                    </Button>
-                </div>
-            </SectionWrapper>
-
-            {/* Why Choose Us Section */}
-            <SectionWrapper background="light">
-                <div className="text-center mb-12">
-                    <h2 className="font-poppins font-bold text-3xl md:text-4xl mb-4 text-secondary-blue">
-                        Why Choose Astoria?
-                    </h2>
-                    <p className="text-lg text-gray-600">
-                        Your success is our mission
-                    </p>
-                </div>
-
-                <div className="grid md:grid-cols-2 lg:grid-cols-4 gap-8">
-                    {whyChooseUs.map((item, index) => (
-                        <div key={index} className="text-center">
-                            <div className="inline-flex items-center justify-center w-16 h-16 bg-primary-red rounded-xl mb-4">
-                                <item.icon className="w-8 h-8 text-white" />
+                <div className="grid md:grid-cols-3 gap-10">
+                    {countries.map((country, index) => (
+                        <div key={index} className="group relative rounded-3xl overflow-hidden shadow-xl aspect-[4/5] bg-secondary-blue">
+                            <img 
+                                src={country.image || (index === 0 ? maltaImage : nzImage)} 
+                                alt={country.name}
+                                className="w-full h-full object-cover transition-transform duration-700 group-hover:scale-110 opacity-70"
+                            />
+                            <div className="absolute inset-0 bg-gradient-to-t from-secondary-blue via-secondary-blue/20 to-transparent"></div>
+                            
+                            <div className="absolute bottom-0 left-0 right-0 p-8">
+                                <span className="inline-block px-3 py-1 bg-primary-red text-white text-xs font-bold rounded-full mb-4">
+                                    Intake Open 2025
+                                </span>
+                                <h3 className="text-3xl font-bold text-white mb-4">{country.name}</h3>
+                                <p className="text-gray-300 text-sm mb-6 line-clamp-2">{country.description}</p>
+                                <Link to="/countries" className="inline-flex items-center text-white font-bold group-hover:text-primary-red transition-colors">
+                                    Explore Courses <ChevronRight className="ml-2 w-4 h-4" />
+                                </Link>
                             </div>
-                            <h3 className="font-poppins font-semibold text-xl mb-2 text-secondary-blue">
-                                {item.title}
-                            </h3>
-                            <p className="text-gray-600">
-                                {item.description}
-                            </p>
                         </div>
                     ))}
                 </div>
-            </SectionWrapper>
 
-            {/* Latest Opportunities Section - From Facebook Posts */}
-            <SectionWrapper background="light">
-                <div className="text-center mb-12">
-                    <h2 className="font-poppins font-bold text-3xl md:text-4xl mb-4 text-secondary-blue">
-                        Latest Opportunities
-                    </h2>
-                    <p className="text-lg text-gray-600">
-                        Check out our latest study abroad offers and updates
-                    </p>
-                </div>
-
-                <div className="grid md:grid-cols-2 gap-8 max-w-5xl mx-auto">
-                    <PromoCard
-                        image={maltaImage}
-                        title="Study in Malta"
-                        subtitle="Detailed Guidance"
-                        features={[
-                            "English Speaking European Country",
-                            "Affordable Tuition & Living Cost",
-                            "EU & Schengen Member State",
-                            "High Visa Success Rate",
-                            "Work While Studying (20hrs/week)"
-                        ]}
-                        details={[
-                            { label: "Intakes", value: "January, April, July, October" },
-                            { label: "Tuition Fee", value: "Approx €3,000 – €8,000 / year" }
-                        ]}
-                    />
-                    <PromoCard
-                        image={nzImage}
-                        title="Study in New Zealand"
-                        subtitle="2025-2026 Updates"
-                        features={[
-                            "Top-Ranked Universities & Programs",
-                            "Work Up to 25 Hours/Week (New Rule)",
-                            "Post-Study Work Visa (Stay 1-3 Years)",
-                            "Open Pathway to PR (Permanent Residency)",
-                            "Family Accompany Policy for Specific Courses"
-                        ]}
-                        ctaLink="/contact"
-                    />
+                <div className="text-center mt-12">
+                    <Link to="/countries" className="text-secondary-blue font-bold text-lg hover:text-primary-red transition-colors inline-flex items-center">
+                        View All 15+ Destinations <ChevronRight className="ml-2 w-5 h-5" />
+                    </Link>
                 </div>
             </SectionWrapper>
 
-            {/* Testimonials Section */}
+            {/* Promo Section */}
+            <SectionWrapper background="secondary" className="relative overflow-hidden">
+                <div className="absolute top-0 right-0 w-1/4 h-full bg-white/5 skew-x-12 translate-x-20"></div>
+                <div className="grid lg:grid-cols-2 gap-16 items-center">
+                    <div>
+                        <h2 className="text-4xl md:text-5xl font-bold mb-8 leading-tight">Apply to Malta with <br />Full Support</h2>
+                        <p className="text-xl text-blue-100 mb-10 leading-relaxed italic border-l-4 border-primary-red pl-6">
+                            "Malta offers the most affordable European education with a 100% English-speaking environment. Perfect for Bangladeshi students seeking PR in the EU."
+                        </p>
+                        <ul className="space-y-4 mb-10">
+                            {[
+                                "No IELTS required for specific programs",
+                                "Work while studying authorized",
+                                "Low cost of living compared to UK/USA",
+                                "99% Visa success rate via Astoria"
+                            ].map((item, i) => (
+                                <li key={i} className="flex items-center text-lg">
+                                    <CheckCircle className="text-primary-red mr-4 w-6 h-6 flex-shrink-0" />
+                                    {item}
+                                </li>
+                            ))}
+                        </ul>
+                        <Button to="/contact" variant="primary" className="px-12">Claim Your Spot Now</Button>
+                    </div>
+                    <div className="relative">
+                        <div className="absolute inset-0 bg-primary-red/10 rounded-3xl -rotate-3 scale-105"></div>
+                        <img 
+                            src={maltaImage} 
+                            alt="Study Malta" 
+                            className="relative z-10 rounded-3xl shadow-2xl border-4 border-white/10"
+                        />
+                    </div>
+                </div>
+            </SectionWrapper>
+
+            {/* Testimonials */}
             <SectionWrapper background="white">
-                <div className="text-center mb-12">
-                    <h2 className="font-poppins font-bold text-3xl md:text-4xl mb-4 text-secondary-blue">
-                        Student Success Stories
-                    </h2>
-                    <p className="text-lg text-gray-600">
-                        Hear from students who achieved their dreams with us
-                    </p>
+                <div className="text-center mb-16">
+                    <p className="text-primary-red font-bold text-sm uppercase tracking-widest mb-4">Student Stories</p>
+                    <h2 className="text-4xl md:text-5xl font-bold text-secondary-blue">Join Our Successful Alumni</h2>
                 </div>
 
-                <div className="relative group max-w-6xl mx-auto">
-                    {/* Navigation Buttons */}
-                    {testimonials.length > 3 && (
-                        <>
-                            <button
-                                onClick={prevSlide}
-                                className="absolute -left-4 md:-left-12 top-1/2 -translate-y-1/2 z-20 p-3 bg-white rounded-full shadow-lg text-secondary-blue hover:bg-secondary-blue hover:text-white transition-all opacity-0 group-hover:opacity-100"
+                <div className="relative max-w-6xl mx-auto px-4">
+                    <div className="grid md:grid-cols-2 lg:grid-cols-3 gap-8 pb-12">
+                        {getVisibleTestimonials().map((testimonial, index) => (
+                            <div 
+                                key={index} 
+                                className="bg-gray-50 p-8 rounded-3xl border border-gray-100 relative shadow-sm hover:shadow-md transition-shadow"
                             >
-                                <ChevronLeft className="w-6 h-6" />
-                            </button>
-                            <button
-                                onClick={nextSlide}
-                                className="absolute -right-4 md:-right-12 top-1/2 -translate-y-1/2 z-20 p-3 bg-white rounded-full shadow-lg text-secondary-blue hover:bg-secondary-blue hover:text-white transition-all opacity-0 group-hover:opacity-100"
-                            >
-                                <ChevronRight className="w-6 h-6" />
-                            </button>
-                        </>
-                    )}
-
-                    <div className="overflow-hidden px-2">
-                        <div 
-                            className={`grid md:grid-cols-3 gap-8 transition-opacity duration-500 ${isAnimating ? 'opacity-40' : 'opacity-100'}`}
-                        >
-                            {getVisibleTestimonials().map((testimonial, index) => (
-                                <div 
-                                    key={`${testimonial.id}-${index}`} 
-                                    className="bg-white rounded-3xl shadow-xl p-8 border-t-8 border-primary-red relative transform transition-transform hover:-translate-y-2"
-                                >
-                                    <Quote className="absolute top-4 right-4 w-10 h-10 text-gray-50 opacity-10" />
-                                    <div className="flex mb-4">
-                                        {[...Array(testimonial.rating)].map((_, i) => (
-                                            <Star key={i} className="w-5 h-5 text-yellow-400 fill-current" />
-                                        ))}
+                                <Quote className="absolute top-6 right-6 w-12 h-12 text-secondary-blue/5" />
+                                <div className="flex mb-4">
+                                    {[...Array(5)].map((_, i) => (
+                                        <Star key={i} className={`w-4 h-4 ${i < testimonial.rating ? 'text-yellow-400 fill-current' : 'text-gray-300'}`} />
+                                    ))}
+                                </div>
+                                <p className="text-gray-700 italic mb-8 leading-relaxed">"{testimonial.text}"</p>
+                                <div className="flex items-center">
+                                    <div className="w-12 h-12 rounded-full bg-secondary-blue text-white flex items-center justify-center font-bold mr-4">
+                                        {testimonial.name[0]}
                                     </div>
-                                    <p className="text-gray-700 mb-8 italic leading-relaxed font-medium">"{testimonial.text}"</p>
-                                    <div className="mt-auto pt-6 border-t border-gray-50 flex items-center space-x-4">
-                                        <div className="w-12 h-12 bg-blue-50 rounded-2xl flex items-center justify-center text-secondary-blue font-bold text-xl">
-                                            {testimonial.name.charAt(0)}
-                                        </div>
-                                        <div>
-                                            <p className="font-bold text-secondary-blue uppercase tracking-tight">{testimonial.name}</p>
-                                            <p className="text-xs text-primary-red font-bold">Now studying in {testimonial.country}</p>
-                                        </div>
+                                    <div>
+                                        <p className="font-bold text-secondary-blue">{testimonial.name}</p>
+                                        <p className="text-xs text-primary-red font-bold uppercase tracking-wide">Studying in {testimonial.country}</p>
                                     </div>
                                 </div>
-                            ))}
-                        </div>
-                    </div>
-
-                    {/* Indicators */}
-                    <div className="flex justify-center mt-10 space-x-2">
-                        {testimonials.map((_, i) => (
-                            <button
-                                key={i}
-                                onClick={() => setCurrentIndex(i)}
-                                className={`w-2 h-2 rounded-full transition-all ${currentIndex === i ? 'bg-secondary-blue w-8' : 'bg-gray-200'}`}
-                            />
+                            </div>
                         ))}
                     </div>
+                    
+                    {/* Controls */}
+                    <div className="flex justify-center items-center space-x-6">
+                        <button onClick={prevSlide} className="p-3 rounded-full border-2 border-gray-100 text-secondary-blue hover:bg-secondary-blue hover:text-white transition-all">
+                            <ChevronLeft />
+                        </button>
+                        <div className="flex space-x-2">
+                            {testimonials.slice(0, Math.ceil(testimonials.length / 3)).map((_, i) => (
+                                <button 
+                                    key={i} 
+                                    onClick={() => setCurrentIndex(i * 3)}
+                                    className={`w-3 h-3 rounded-full transition-all ${currentIndex === i * 3 ? 'bg-primary-red w-8' : 'bg-gray-200'}`}
+                                />
+                            ))}
+                        </div>
+                        <button onClick={nextSlide} className="p-3 rounded-full border-2 border-gray-100 text-secondary-blue hover:bg-secondary-blue hover:text-white transition-all">
+                            <ChevronRight />
+                        </button>
+                    </div>
                 </div>
-
             </SectionWrapper>
 
-            {/* CTA Section */}
-            <SectionWrapper background="dark">
-                <div className="text-center">
-                    <h2 className="font-poppins font-bold text-3xl md:text-4xl mb-6">
-                        Ready to Start Your Journey?
-                    </h2>
-                    <p className="text-xl mb-8 text-gray-300 max-w-2xl mx-auto">
-                        Get in touch with our expert consultants today and take the first step
-                        towards your international education dream.
+            {/* Final CTA */}
+            <SectionWrapper background="dark" className="text-center relative overflow-hidden py-32">
+                <div className="absolute inset-0 bg-[url('https://www.transparenttextures.com/patterns/carbon-fibre.png')] opacity-20"></div>
+                <div className="relative z-10">
+                    <h2 className="text-4xl md:text-6xl font-bold mb-8 leading-tight">Don't Leave Your Future to Chance</h2>
+                    <p className="text-xl text-gray-300 mb-12 max-w-2xl mx-auto leading-relaxed">
+                        Our expert consultants provide the strategic edge needed for your international education success. Start your journey today with a free assessment.
                     </p>
-                    <div className="flex flex-wrap gap-4 justify-center">
-                        <Button to="/contact" variant="primary">
-                            Contact Us Now
+                    <div className="flex flex-wrap justify-center gap-6">
+                        <Button to="/contact" variant="primary" className="px-12 py-5 text-xl">
+                            Book Free Consultation
                         </Button>
-                        <Button to="/about" variant="outline" className="border-white text-white hover:bg-white hover:text-secondary-blue">
-                            Learn More About Us
+                        <Button to="/about" variant="outline" className="border-white text-white hover:bg-white hover:text-secondary-blue px-12 py-5 text-xl">
+                            Learn More
                         </Button>
                     </div>
                 </div>
             </SectionWrapper>
+
+            {/* Floating Consultation Button */}
+            <div className="fixed bottom-8 right-8 z-50">
+                <Link to="/contact" className="flex items-center bg-primary-red text-white px-6 py-4 rounded-full shadow-2xl hover:scale-110 active:scale-95 transition-all group">
+                    <Phone className="w-5 h-5 mr-3 group-hover:rotate-12 transition-transform" />
+                    <span className="font-bold whitespace-nowrap">Free Consultation</span>
+                </Link>
+            </div>
         </div>
     );
 };
+
 
 export default Home;
