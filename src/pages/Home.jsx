@@ -151,54 +151,92 @@ const Home = () => {
         <div className="overflow-x-hidden">
             <ConsultancyPopup />
             {/* Hero Section */}
-            <section className="relative min-h-screen flex items-center pt-20 bg-secondary-blue overflow-hidden">
-                {/* Abstract Decorative Elements */}
-                <div className="absolute top-0 right-0 w-1/3 h-full bg-primary-red/10 -skew-x-12 transform translate-x-20"></div>
-                <div className="absolute bottom-0 left-0 w-64 h-64 bg-primary-red/20 rounded-full blur-3xl -translate-x-1/2 translate-y-1/2"></div>
+            <section className="relative min-h-[90vh] flex items-center pt-24 bg-white overflow-hidden pb-10">
+                {/* Modern Decorative Gradients */}
+                <div className="absolute top-0 right-0 w-[50%] h-[100%] bg-gradient-to-l from-blue-50/50 to-transparent pointer-events-none"></div>
+                <div className="absolute top-[20%] right-[10%] w-64 h-64 bg-primary-red/5 rounded-full blur-[100px] pointer-events-none animate-pulse"></div>
+                <div className="absolute bottom-[10%] left-[5%] w-96 h-96 bg-blue-100/20 rounded-full blur-[120px] pointer-events-none"></div>
                 
-                <div className="container-custom relative z-10 py-20">
-                    <div className="grid lg:grid-cols-2 gap-16 items-center">
+                {/* Subtle Dot Pattern */}
+                <div className="absolute inset-0 opacity-[0.03] pointer-events-none" style={{ backgroundImage: 'radial-gradient(#0A2A43 1px, transparent 1px)', backgroundSize: '40px 40px' }}></div>
+
+                <div className="container-custom relative z-10">
+                    <div className="grid lg:grid-cols-2 gap-12 items-center">
                         <div className="animate-fade-in-up">
-                            <div className="inline-flex items-center px-4 py-2 rounded-full bg-white/10 border border-white/20 text-white text-sm font-semibold mb-6 backdrop-blur-sm">
+                            <div className="inline-flex items-center px-4 py-2 rounded-full bg-blue-50 border border-blue-100 text-secondary-blue text-[13px] font-bold mb-8 shadow-sm">
                                 <span className="w-2 h-2 rounded-full bg-primary-red mr-2 animate-pulse"></span>
                                 Currently Accepting Intake 2025 Applications
                             </div>
-                            <h1 className="font-poppins font-bold text-5xl md:text-7xl text-white mb-8 leading-[1.1]">
+                            
+                            <h1 className="font-poppins font-extrabold text-5xl md:text-7xl text-secondary-blue mb-8 leading-[1.05] tracking-tight">
                                 Master Your <br />
-                                <span className="text-primary-red">Global Future</span>
+                                <span className="gradient-text">Global Future</span>
                             </h1>
-                            <p className="text-xl text-gray-300 mb-10 max-w-xl leading-relaxed">
-                                Join over 1,200 Bangladeshi students who successfully started their international education journey with Astoria's expert guidance.
+                            
+                            <p className="text-xl text-gray-500 mb-10 max-w-xl leading-relaxed font-medium">
+                                Join over <span className="text-secondary-blue font-bold">1,200 Bangladeshi students</span> who successfully started their international education journey with Astoria's expert guidance.
                             </p>
+                            
                             <div className="flex flex-wrap gap-5">
-                                <Button to="/contact" variant="primary" className="px-10">
+                                <Button to="/contact" variant="primary" className="px-10 py-4 text-base shadow-2xl shadow-primary-red/30">
                                     Start Free Assessment
                                 </Button>
-                                <Button to="/countries" variant="white" className="px-10">
+                                <Button to="/countries" variant="outline" className="px-10 py-4 text-base border-[#E5E7EB] text-gray-700 hover:border-primary-red">
                                     Browse Destinations
                                 </Button>
                             </div>
                             
-                            {/* Trust Badge */}
-                            <div className="mt-12 flex items-center space-x-6 text-white/60 text-sm">
+                            {/* Trust Badge refined */}
+                            <div className="mt-14 flex items-center space-x-6">
                                 <div className="flex -space-x-3">
                                     {[1, 2, 3, 4].map(i => (
-                                        <div key={i} className="w-10 h-10 rounded-full border-2 border-secondary-blue bg-gray-300 overflow-hidden">
+                                        <div key={i} className="w-12 h-12 rounded-full border-4 border-white bg-gray-100 overflow-hidden shadow-lg transform hover:scale-110 transition-transform cursor-pointer relative z-[5-i]">
                                             <img src={`https://i.pravatar.cc/100?img=${i+10}`} alt="Student" />
                                         </div>
                                     ))}
+                                    <div className="w-12 h-12 rounded-full border-4 border-white bg-primary-red text-white flex items-center justify-center text-[10px] font-bold shadow-lg relative z-0">
+                                        +1.2k
+                                    </div>
                                 </div>
-                                <p><span className="text-white font-bold text-lg">4.9/5</span> rating from verified Astoria students</p>
+                                <div className="space-y-1">
+                                    <div className="flex items-center text-accent-gold">
+                                        {[1, 2, 3, 4, 5].map(s => <Star key={s} size={14} fill="currentColor" />)}
+                                        <span className="ml-2 text-secondary-blue font-bold text-lg">4.9/5</span>
+                                    </div>
+                                    <p className="text-gray-400 text-xs font-bold uppercase tracking-widest">Global student rating</p>
+                                </div>
                             </div>
                         </div>
 
-                        <div className="relative hidden lg:block animate-fade-in-up" style={{ animationDelay: '0.2s' }}>
-                            <div className="relative z-10 rounded-3xl overflow-hidden shadow-2xl border-8 border-white/5 mx-auto lg:mx-0 max-w-lg lg:max-w-none">
+                        <div className="relative animate-fade-in-up delay-200">
+                            {/* Abstract organic shape behind image */}
+                            <div className="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 w-[120%] h-[120%] bg-blue-50 rounded-full blur-3xl opacity-50 pointer-events-none"></div>
+                            
+                            <div className="relative z-10 animate-float">
                                 <img
                                     src={heroImage}
-                                    alt="Expert Counseling Session"
-                                    className="w-full h-auto"
+                                    alt="Astoria Study Abroad"
+                                    className="w-full h-auto drop-shadow-[0_35px_35px_rgba(0,0,0,0.08)] transform transition-transform duration-700 hover:scale-105"
                                 />
+                                
+                                {/* Floating Success Card */}
+                                <div className="absolute -bottom-6 -left-6 bg-white p-6 rounded-[2rem] shadow-[0_20px_50px_rgba(0,0,0,0.1)] animate-fade-in delay-1000 border border-gray-50 flex items-center space-x-4 max-w-[240px]">
+                                    <div className="w-12 h-12 bg-green-500 rounded-2xl flex items-center justify-center text-white shadow-lg shadow-green-200">
+                                        <CheckCircle size={24} />
+                                    </div>
+                                    <div>
+                                        <p className="text-[10px] font-bold text-gray-400 uppercase tracking-widest">Visa Success</p>
+                                        <p className="text-xl font-extrabold text-secondary-blue leading-none">98.5%</p>
+                                    </div>
+                                </div>
+
+                                {/* Floating Global Card */}
+                                <div className="absolute top-0 -right-4 bg-white/80 backdrop-blur-md p-5 rounded-[2rem] shadow-xl animate-fade-in delay-700 border border-white/50 flex items-center space-x-3">
+                                    <div className="w-10 h-10 bg-blue-600 rounded-xl flex items-center justify-center text-white shadow-lg shadow-blue-200">
+                                        <Globe size={20} />
+                                    </div>
+                                    <p className="text-sm font-bold text-secondary-blue">25+ Countries</p>
+                                </div>
                             </div>
                         </div>
                     </div>
