@@ -101,5 +101,32 @@ export const BlogService = {
             console.error(`Unexpected error deleting blog post ${id}:`, err);
             return false;
         }
+    },
+
+    // Upload image to storage
+    uploadImage: async (file) => {
+        try {
+            const fileExt = file.name.split('.').pop();
+            const fileName = `${Math.random().toString(36).substring(2)}-${Date.now()}.${fileExt}`;
+            const filePath = `${fileName}`;
+
+            const { data, error } = await supabase.storage
+                .from('blog-images')
+                .upload(filePath, file);
+
+            if (error) {
+                throw error;
+            }
+
+            // Get public URL
+            const { data: { publicUrl } } = supabase.storage
+                .from('blog-images')
+                .getPublicUrl(filePath);
+
+            return publicUrl;
+        } catch (err) {
+            console.error('Error uploading image:', err.message);
+            throw err;
+        }
     }
 };

@@ -1,6 +1,6 @@
 import React, { useState, useEffect } from 'react';
 import { useNavigate } from 'react-router-dom';
-import { Plus, Edit, Trash2, LogOut, Save, X, ArrowLeft, MessageSquare, Newspaper, CheckCircle, User, Phone, Mail, Globe, BookOpen, Star, ExternalLink } from 'lucide-react';
+import { Plus, Edit, Trash2, LogOut, Save, X, ArrowLeft, MessageSquare, Newspaper, CheckCircle, User, Phone, Mail, Globe, BookOpen, Star, ExternalLink, Upload, Loader2, Image as ImageIcon } from 'lucide-react';
 import { BlogService } from '../../services/BlogService';
 import { MessageService } from '../../services/MessageService';
 import { ReviewService } from '../../services/ReviewService';
@@ -43,6 +43,7 @@ const Dashboard = () => {
         content: ''
     };
     const [formData, setFormData] = useState(initialFormState);
+    const [uploadingImage, setUploadingImage] = useState(false);
 
     // Initial Form State
     const countryInitialState = {
@@ -55,6 +56,22 @@ const Dashboard = () => {
         order_index: 0
     };
     const [countryForm, setCountryForm] = useState(countryInitialState);
+
+    const handleImageUpload = async (e) => {
+        const file = e.target.files[0];
+        if (!file) return;
+
+        setUploadingImage(true);
+        try {
+            const publicUrl = await BlogService.uploadImage(file);
+            setFormData({ ...formData, image: publicUrl });
+        } catch (err) {
+            console.error(err);
+            alert('Failed to upload image. Please ensure the storage bucket "blog-images" exists in your Supabase project.');
+        } finally {
+            setUploadingImage(false);
+        }
+    };
 
 
     useEffect(() => {
@@ -271,15 +288,38 @@ const Dashboard = () => {
                         <div className="max-w-2xl mx-auto space-y-12 pb-20">
                             {/* Hero Image Field */}
                             <div className="group relative">
-                                <label className="block text-[10px] font-bold text-gray-400 uppercase tracking-widest mb-4">Cover Image URL</label>
+                                <div className="flex items-center justify-between mb-4">
+                                    <label className="block text-[10px] font-bold text-gray-400 uppercase tracking-widest">Cover Image</label>
+                                    <div className="flex space-x-2">
+                                        <input
+                                            type="file"
+                                            id="image-upload"
+                                            className="hidden"
+                                            accept="image/*"
+                                            onChange={handleImageUpload}
+                                            disabled={uploadingImage}
+                                        />
+                                        <label
+                                            htmlFor="image-upload"
+                                            className="px-4 py-1.5 bg-secondary-blue text-white rounded-full text-[10px] font-bold uppercase tracking-widest cursor-pointer hover:bg-blue-800 transition-colors flex items-center shadow-lg shadow-blue-900/10"
+                                        >
+                                            {uploadingImage ? (
+                                                <Loader2 className="w-3 h-3 mr-2 animate-spin" />
+                                            ) : (
+                                                <Upload className="w-3 h-3 mr-2" />
+                                            )}
+                                            {uploadingImage ? 'Uploading...' : 'Upload from Device'}
+                                        </label>
+                                    </div>
+                                </div>
                                 <input
                                     type="text"
                                     value={formData.image}
                                     onChange={(e) => setFormData({ ...formData, image: e.target.value })}
-                                    className="w-full bg-gray-50 px-6 py-4 rounded-2xl border-2 border-transparent focus:border-primary-red/20 focus:bg-white transition-all outline-none text-sm text-gray-600"
-                                    placeholder="Paste high-quality image URL here..."
+                                    className="w-full bg-gray-50 px-6 py-4 rounded-2xl border-2 border-transparent focus:border-primary-red/20 focus:bg-white transition-all outline-none text-sm text-gray-600 mb-4"
+                                    placeholder="Or paste high-quality image URL here..."
                                 />
-                                <div className="mt-4 rounded-3xl overflow-hidden bg-gray-100 aspect-video relative group">
+                                <div className="rounded-3xl overflow-hidden bg-gray-100 aspect-video relative group border-2 border-dashed border-gray-200">
                                     {formData.image ? (
                                         <img 
                                             src={formData.image} 
@@ -288,8 +328,8 @@ const Dashboard = () => {
                                         />
                                     ) : (
                                         <div className="absolute inset-0 flex flex-col items-center justify-center text-gray-300">
-                                            <Newspaper className="w-12 h-12 mb-4 opacity-50" />
-                                            <p className="text-xs font-bold uppercase tracking-widest">Image Preview</p>
+                                            <ImageIcon className="w-12 h-12 mb-4 opacity-50" />
+                                            <p className="text-xs font-bold uppercase tracking-widest">No Image Selected</p>
                                         </div>
                                     )}
                                 </div>
