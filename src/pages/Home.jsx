@@ -2,7 +2,7 @@ import React, { useState, useEffect } from 'react';
 import { 
     GraduationCap, FileCheck, Plane, Home as HomeIcon, Users, 
     Award, Star, Globe, BookOpen, Shield, TrendingUp, 
-    ChevronRight, ChevronLeft, Quote, CheckCircle, Phone 
+    ChevronRight, ChevronLeft, Quote, CheckCircle, Phone, X 
 } from 'lucide-react';
 import { Link } from 'react-router-dom';
 import Button from '../components/Button';
@@ -120,7 +120,7 @@ const Home = () => {
                         onClick={() => setShowPopup(false)}
                         className="absolute top-6 right-6 text-gray-400 hover:text-secondary-blue transition-colors z-10"
                     >
-                        <ChevronRight className="w-8 h-8 rotate-45" />
+                        <X className="w-8 h-8" />
                     </button>
                     
                     <div className="flex flex-col md:flex-row h-full">

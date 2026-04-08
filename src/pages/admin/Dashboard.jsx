@@ -1,6 +1,6 @@
 import React, { useState, useEffect } from 'react';
 import { useNavigate } from 'react-router-dom';
-import { Plus, Edit, Trash2, LogOut, Save, X, ArrowLeft, MessageSquare, Newspaper, CheckCircle, User, Phone, Mail, Globe, BookOpen } from 'lucide-react';
+import { Plus, Edit, Trash2, LogOut, Save, X, ArrowLeft, MessageSquare, Newspaper, CheckCircle, User, Phone, Mail, Globe, BookOpen, Star } from 'lucide-react';
 import { BlogService } from '../../services/BlogService';
 import { MessageService } from '../../services/MessageService';
 import { ReviewService } from '../../services/ReviewService';
