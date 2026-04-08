@@ -150,93 +150,76 @@ const Home = () => {
     return (
         <div className="overflow-x-hidden">
             <ConsultancyPopup />
-            {/* Hero Section */}
-            <section className="relative min-h-[90vh] flex items-center pt-24 bg-white overflow-hidden pb-10">
-                {/* Modern Decorative Gradients */}
-                <div className="absolute top-0 right-0 w-[50%] h-[100%] bg-gradient-to-l from-blue-50/50 to-transparent pointer-events-none"></div>
-                <div className="absolute top-[20%] right-[10%] w-64 h-64 bg-primary-red/5 rounded-full blur-[100px] pointer-events-none animate-pulse"></div>
-                <div className="absolute bottom-[10%] left-[5%] w-96 h-96 bg-blue-100/20 rounded-full blur-[120px] pointer-events-none"></div>
-                
-                {/* Subtle Dot Pattern */}
-                <div className="absolute inset-0 opacity-[0.03] pointer-events-none" style={{ backgroundImage: 'radial-gradient(#0A2A43 1px, transparent 1px)', backgroundSize: '40px 40px' }}></div>
+            {/* Hero Section - Full Branding Focused */}
+            <section className="relative pt-24 pb-20 bg-white overflow-hidden">
+                {/* Subtle Background Textures */}
+                <div className="absolute inset-0 opacity-[0.03] pointer-events-none" style={{ backgroundImage: 'radial-gradient(#0A2A43 1px, transparent 1px)', backgroundSize: '60px 60px' }}></div>
+                <div className="absolute top-0 right-0 w-1/2 h-full bg-gradient-to-l from-blue-50/30 to-transparent pointer-events-none transition-opacity duration-1000"></div>
 
                 <div className="container-custom relative z-10">
-                    <div className="grid lg:grid-cols-2 gap-12 items-center">
-                        <div className="animate-fade-in-up">
-                            <div className="inline-flex items-center px-4 py-2 rounded-full bg-blue-50 border border-blue-100 text-secondary-blue text-[13px] font-bold mb-8 shadow-sm">
-                                <span className="w-2 h-2 rounded-full bg-primary-red mr-2 animate-pulse"></span>
-                                Currently Accepting Intake 2025 Applications
-                            </div>
+                    <div className="flex flex-col items-center">
+                        {/* Status Badge */}
+                        <div className="inline-flex items-center px-5 py-2.5 rounded-full bg-white border border-gray-100 text-secondary-blue text-xs font-bold mb-10 shadow-xl shadow-blue-900/5 animate-fade-in-up">
+                            <span className="w-2 h-2 rounded-full bg-primary-red mr-3 animate-pulse"></span>
+                            Official 2025 Admissions Gateway
+                        </div>
+
+                        {/* Massive Branding Image */}
+                        <div className="relative w-full max-w-7xl mx-auto mb-16 animate-fade-in-up delay-200 group">
+                            <div className="absolute -inset-4 bg-gradient-to-r from-primary-red/5 via-transparent to-blue-500/5 rounded-[3rem] blur-2xl opacity-60 pointer-events-none"></div>
                             
-                            <h1 className="font-poppins font-extrabold text-5xl md:text-7xl text-secondary-blue mb-8 leading-[1.05] tracking-tight">
-                                Master Your <br />
-                                <span className="gradient-text">Global Future</span>
-                            </h1>
-                            
-                            <p className="text-xl text-gray-500 mb-10 max-w-xl leading-relaxed font-medium">
-                                Join over <span className="text-secondary-blue font-bold">1,200 Bangladeshi students</span> who successfully started their international education journey with Astoria's expert guidance.
-                            </p>
-                            
-                            <div className="flex flex-wrap gap-5">
-                                <Button to="/contact" variant="primary" className="px-10 py-4 text-base shadow-2xl shadow-primary-red/30">
-                                    Start Free Assessment
-                                </Button>
-                                <Button to="/countries" variant="outline" className="px-10 py-4 text-base border-[#E5E7EB] text-gray-700 hover:border-primary-red">
-                                    Browse Destinations
-                                </Button>
-                            </div>
-                            
-                            {/* Trust Badge refined */}
-                            <div className="mt-14 flex items-center space-x-6">
-                                <div className="flex -space-x-3">
-                                    {[1, 2, 3, 4].map(i => (
-                                        <div key={i} className="w-12 h-12 rounded-full border-4 border-white bg-gray-100 overflow-hidden shadow-lg transform hover:scale-110 transition-transform cursor-pointer relative z-[5-i]">
-                                            <img src={`https://i.pravatar.cc/100?img=${i+10}`} alt="Student" />
+                            <div className="relative rounded-[3rem] overflow-hidden shadow-[0_50px_100px_-20px_rgba(0,0,0,0.15)] border-4 border-white animate-float">
+                                <img
+                                    src={heroImage}
+                                    alt="Astoria Global Success"
+                                    className="w-full h-auto object-cover transform hover:scale-[1.02] transition-transform duration-1000"
+                                />
+                                
+                                {/* Inner Floating Badges Layer */}
+                                <div className="absolute top-8 right-8 flex flex-col space-y-4">
+                                    <div className="glass px-6 py-3 rounded-2xl flex items-center space-x-3 shadow-2xl animate-fade-in delay-700">
+                                        <div className="w-10 h-10 bg-primary-red rounded-xl flex items-center justify-center text-white">
+                                            <Award size={20} />
                                         </div>
-                                    ))}
-                                    <div className="w-12 h-12 rounded-full border-4 border-white bg-primary-red text-white flex items-center justify-center text-[10px] font-bold shadow-lg relative z-0">
-                                        +1.2k
+                                        <div className="text-secondary-blue">
+                                            <p className="text-[10px] font-bold text-gray-400 uppercase tracking-widest">Success Rate</p>
+                                            <p className="text-lg font-bold">98.5%</p>
+                                        </div>
                                     </div>
                                 </div>
-                                <div className="space-y-1">
-                                    <div className="flex items-center text-accent-gold">
-                                        {[1, 2, 3, 4, 5].map(s => <Star key={s} size={14} fill="currentColor" />)}
-                                        <span className="ml-2 text-secondary-blue font-bold text-lg">4.9/5</span>
+                            </div>
+                            
+                            {/* Stats Overlaying the bottom of the image */}
+                            <div className="absolute -bottom-10 left-1/2 -translate-x-1/2 w-full max-w-4xl grid grid-cols-2 md:grid-cols-4 gap-4 px-6 md:px-0 animate-fade-in delay-1000">
+                                {stats.map((stat, i) => (
+                                    <div key={i} className="bg-white/80 backdrop-blur-xl p-5 md:p-6 rounded-[2rem] shadow-2xl border border-white/50 text-center hover:translate-y-[-5px] transition-all duration-300">
+                                        <p className="text-2xl md:text-3xl font-extrabold text-secondary-blue mb-1 leading-none">{stat.value}</p>
+                                        <p className="text-[9px] md:text-[10px] text-gray-400 font-bold uppercase tracking-widest">{stat.label}</p>
                                     </div>
-                                    <p className="text-gray-400 text-xs font-bold uppercase tracking-widest">Global student rating</p>
-                                </div>
+                                ))}
                             </div>
                         </div>
 
-                        <div className="relative animate-fade-in-up delay-200">
-                            {/* Abstract organic shape behind image */}
-                            <div className="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 w-[120%] h-[120%] bg-blue-50 rounded-full blur-3xl opacity-50 pointer-events-none"></div>
-                            
-                            <div className="relative z-10 animate-float">
-                                <img
-                                    src={heroImage}
-                                    alt="Astoria Study Abroad"
-                                    className="w-full h-auto drop-shadow-[0_35px_35px_rgba(0,0,0,0.08)] transform transition-transform duration-700 hover:scale-105"
-                                />
-                                
-                                {/* Floating Success Card */}
-                                <div className="absolute -bottom-6 -left-6 bg-white p-6 rounded-[2rem] shadow-[0_20px_50px_rgba(0,0,0,0.1)] animate-fade-in delay-1000 border border-gray-50 flex items-center space-x-4 max-w-[240px]">
-                                    <div className="w-12 h-12 bg-green-500 rounded-2xl flex items-center justify-center text-white shadow-lg shadow-green-200">
-                                        <CheckCircle size={24} />
-                                    </div>
-                                    <div>
-                                        <p className="text-[10px] font-bold text-gray-400 uppercase tracking-widest">Visa Success</p>
-                                        <p className="text-xl font-extrabold text-secondary-blue leading-none">98.5%</p>
-                                    </div>
-                                </div>
-
-                                {/* Floating Global Card */}
-                                <div className="absolute top-0 -right-4 bg-white/80 backdrop-blur-md p-5 rounded-[2rem] shadow-xl animate-fade-in delay-700 border border-white/50 flex items-center space-x-3">
-                                    <div className="w-10 h-10 bg-blue-600 rounded-xl flex items-center justify-center text-white shadow-lg shadow-blue-200">
-                                        <Globe size={20} />
-                                    </div>
-                                    <p className="text-sm font-bold text-secondary-blue">25+ Countries</p>
-                                </div>
+                        {/* Minimalist CTA Bottom Section */}
+                        <div className="mt-12 text-center max-w-2xl animate-fade-in-up delay-500">
+                            <h2 className="text-3xl md:text-5xl font-extrabold text-secondary-blue mb-6 tracking-tight leading-[1.2]">
+                                Your Gateway to <span className="gradient-text">Global Knowledge</span>
+                            </h2>
+                            <p className="text-lg text-gray-500 mb-10 leading-relaxed font-medium">
+                                We help Bangladeshi students navigate the journey to the world's most prestigious universities.
+                            </p>
+                            <div className="flex flex-wrap justify-center gap-6">
+                                <Link to="/contact">
+                                    <button className="bg-primary-red text-white px-12 py-5 rounded-2xl font-bold text-lg shadow-2xl shadow-primary-red/30 hover:bg-primary-red-hover hover:scale-105 active:scale-95 transition-all duration-300 flex items-center group">
+                                        Secure My Consultation
+                                        <ChevronRight className="ml-2 w-5 h-5 group-hover:translate-x-1 transition-transform" />
+                                    </button>
+                                </Link>
+                                <Link to="/blogs">
+                                    <button className="bg-white text-secondary-blue px-12 py-5 rounded-2xl font-bold text-lg border-2 border-gray-100 hover:border-primary-red hover:text-primary-red transition-all duration-300">
+                                        Explore Success Stories
+                                    </button>
+                                </Link>
                             </div>
                         </div>
                     </div>
