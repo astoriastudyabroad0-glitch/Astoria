@@ -155,7 +155,7 @@ const Contact = () => {
     };
 
 
-    const contactCards = [
+    const contactInfo = [
         {
             icon: Phone,
             title: 'Phone',
@@ -217,10 +217,10 @@ const Contact = () => {
                                     rel={info.link.startsWith('http') ? 'noopener noreferrer' : undefined}
                                     className="text-gray-700 hover:text-primary-red transition-colors"
                                 >
-                                    {info.content}
+                                    {info.value}
                                 </a>
                             ) : (
-                                <p className="text-gray-700">{info.content}</p>
+                                <p className="text-gray-700">{info.value}</p>
                             )}
                         </div>
                     ))}
