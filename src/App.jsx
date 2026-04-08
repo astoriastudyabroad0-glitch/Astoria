@@ -1,5 +1,5 @@
 import React from 'react';
-import { Routes, Route } from 'react-router-dom';
+import { Routes, Route, useLocation } from 'react-router-dom';
 import Navbar from './components/Navbar';
 import Footer from './components/Footer';
 import Home from './pages/Home';
@@ -13,9 +13,12 @@ import AdminLogin from './pages/admin/Login';
 import Dashboard from './pages/admin/Dashboard';
 
 function App() {
+    const location = useLocation();
+    const isAdminRoute = location.pathname.startsWith('/admin');
+
     return (
         <div className="min-h-screen flex flex-col">
-            <Navbar />
+            {!isAdminRoute && <Navbar />}
             <main className="flex-grow">
                 <Routes>
                     <Route path="/" element={<Home />} />
@@ -33,7 +36,7 @@ function App() {
                     <Route path="/admin/dashboard" element={<Dashboard />} />
                 </Routes>
             </main>
-            <Footer />
+            {!isAdminRoute && <Footer />}
         </div>
     );
 }

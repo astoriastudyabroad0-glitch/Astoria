@@ -36,6 +36,14 @@ const Dashboard = () => {
     const [viewingMessage, setViewingMessage] = useState(null);
     const [loading, setLoading] = useState(true);
 
+    const initialFormState = {
+        title: '',
+        subtitle: '',
+        image: '',
+        content: ''
+    };
+    const [formData, setFormData] = useState(initialFormState);
+
     // Initial Form State
     const countryInitialState = {
         name: '',
