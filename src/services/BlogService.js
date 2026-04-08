@@ -48,7 +48,8 @@ export const BlogService = {
                 .insert([
                     {
                         ...post,
-                        date: post.date || new Date().toISOString().split('T')[0]
+                        date: post.date || new Date().toISOString().split('T')[0],
+                        published_at: post.published_at || new Date().toISOString()
                     }
                 ])
                 .select();

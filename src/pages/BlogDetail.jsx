@@ -55,13 +55,24 @@ const BlogDetail = () => {
     return (
         <div className="pt-20 bg-gray-50 min-h-screen">
             {/* Hero Image Section */}
-            <div className="h-[60vh] w-full relative overflow-hidden">
+            <div className="h-[70vh] w-full relative overflow-hidden bg-secondary-blue flex items-center justify-center">
+                {/* Blurred Background Layers */}
+                <div 
+                    className="absolute inset-0 opacity-40 blur-3xl scale-110"
+                    style={{ 
+                        backgroundImage: `url(${post.image || ''})`,
+                        backgroundSize: 'cover',
+                        backgroundPosition: 'center'
+                    }}
+                ></div>
+                <div className="absolute inset-0 bg-gradient-to-t from-gray-900 via-gray-900/40 to-transparent"></div>
+                
+                {/* Main Content Image */}
                 <img
                     src={post.image || 'https://images.unsplash.com/photo-1523050854058-8df90110c9f1?w=800&auto=format&fit=crop&q=60'}
                     alt={post.title}
-                    className="w-full h-full object-cover scale-105 animate-fade-in"
+                    className="relative z-10 max-h-full max-w-[90%] object-contain animate-fade-in py-10"
                 />
-                <div className="absolute inset-0 bg-gradient-to-t from-gray-900 via-gray-900/40 to-transparent"></div>
                 <div className="absolute inset-0 flex flex-col justify-end p-8 md:p-20 container-custom">
                     <div className="max-w-4xl animate-fade-in-up">
                         <Link to="/blogs" className="inline-flex items-center text-white/70 hover:text-primary-red mb-6 transition-all group">

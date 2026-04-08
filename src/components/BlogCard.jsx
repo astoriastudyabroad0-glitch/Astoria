@@ -9,15 +9,25 @@ const BlogCard = ({ post, index = 0 }) => {
             style={{ animationDelay: `${index * 150}ms` }}
         >
             {/* Image Section */}
-            <div className="relative h-64 overflow-hidden">
-                <div className="absolute inset-0 bg-secondary-blue/20 group-hover:bg-transparent transition-colors duration-500 z-10"></div>
+            <div className="relative h-72 overflow-hidden bg-gray-50 flex items-center justify-center">
+                <div className="absolute inset-0 bg-secondary-blue/5 z-0"></div>
+                {/* Blurred Background for Aspect Ratio Fill */}
+                <div 
+                    className="absolute inset-0 opacity-20 blur-xl scale-110 z-0"
+                    style={{ 
+                        backgroundImage: `url(${post.image || ''})`,
+                        backgroundSize: 'cover',
+                        backgroundPosition: 'center'
+                    }}
+                ></div>
+                
                 <img
                     src={post.image || 'https://images.unsplash.com/photo-1523050854058-8df90110c9f1?w=800&auto=format&fit=crop&q=60'}
                     alt={post.title}
-                    className="w-full h-full object-cover transform scale-100 group-hover:scale-110 transition-transform duration-700"
+                    className="relative z-10 w-full h-full object-contain transform scale-100 group-hover:scale-105 transition-transform duration-700"
                 />
                 <div className="absolute top-6 left-6 z-20">
-                    <div className="bg-white/90 backdrop-blur-md px-4 py-2 rounded-2xl text-[10px] font-bold text-secondary-blue uppercase tracking-widest shadow-lg flex items-center">
+                    <div className="bg-white/95 backdrop-blur-md px-4 py-2 rounded-2xl text-[10px] font-bold text-secondary-blue uppercase tracking-widest shadow-lg flex items-center border border-white/50">
                         <Calendar className="w-3 h-3 mr-2 text-primary-red" />
                         {post.date}
                     </div>
