@@ -165,39 +165,39 @@ const Home = () => {
                         </div>
 
                         {/* Massive Branding Image */}
-                        <div className="relative w-full max-w-7xl mx-auto mb-16 animate-fade-in-up delay-200 group">
-                            <div className="absolute -inset-4 bg-gradient-to-r from-primary-red/5 via-transparent to-blue-500/5 rounded-[3rem] blur-2xl opacity-60 pointer-events-none"></div>
+                        <div className="relative w-full max-w-[1400px] mx-auto mb-10 animate-fade-in-up delay-200 group">
+                            <div className="absolute -inset-6 bg-gradient-to-r from-primary-red/5 via-transparent to-blue-500/5 rounded-[4rem] blur-3xl opacity-60 pointer-events-none"></div>
                             
-                            <div className="relative rounded-[3rem] overflow-hidden shadow-[0_50px_100px_-20px_rgba(0,0,0,0.15)] border-4 border-white animate-float">
+                            <div className="relative rounded-[2rem] md:rounded-[4rem] overflow-hidden shadow-[0_40px_80px_-15px_rgba(0,0,0,0.12)] border-[6px] border-white animate-float">
                                 <img
                                     src={heroImage}
                                     alt="Astoria Global Success"
-                                    className="w-full h-auto object-cover transform hover:scale-[1.02] transition-transform duration-1000"
+                                    className="w-full h-auto object-contain transform transition-transform duration-1000"
                                 />
                                 
-                                {/* Inner Floating Badges Layer */}
-                                <div className="absolute top-8 right-8 flex flex-col space-y-4">
-                                    <div className="glass px-6 py-3 rounded-2xl flex items-center space-x-3 shadow-2xl animate-fade-in delay-700">
-                                        <div className="w-10 h-10 bg-primary-red rounded-xl flex items-center justify-center text-white">
-                                            <Award size={20} />
+                                {/* Inner Floating Badges Layer - Moved to top only */}
+                                <div className="absolute top-6 right-6 md:top-12 md:right-12">
+                                    <div className="glass px-5 py-2.5 md:px-8 md:py-4 rounded-2xl flex items-center space-x-4 shadow-2xl animate-fade-in delay-700">
+                                        <div className="w-10 h-10 md:w-14 md:h-14 bg-primary-red rounded-xl md:rounded-2xl flex items-center justify-center text-white shadow-lg shadow-primary-red/20">
+                                            <Award className="w-5 h-5 md:w-8 md:h-8" />
                                         </div>
                                         <div className="text-secondary-blue">
-                                            <p className="text-[10px] font-bold text-gray-400 uppercase tracking-widest">Success Rate</p>
-                                            <p className="text-lg font-bold">98.5%</p>
+                                            <p className="text-[10px] md:text-xs font-bold text-gray-400 uppercase tracking-widest mb-0.5">Global Recognition</p>
+                                            <p className="text-lg md:text-2xl font-black leading-none">Top Rated</p>
                                         </div>
                                     </div>
                                 </div>
                             </div>
-                            
-                            {/* Stats Overlaying the bottom of the image */}
-                            <div className="absolute -bottom-10 left-1/2 -translate-x-1/2 w-full max-w-4xl grid grid-cols-2 md:grid-cols-4 gap-4 px-6 md:px-0 animate-fade-in delay-1000">
-                                {stats.map((stat, i) => (
-                                    <div key={i} className="bg-white/80 backdrop-blur-xl p-5 md:p-6 rounded-[2rem] shadow-2xl border border-white/50 text-center hover:translate-y-[-5px] transition-all duration-300">
-                                        <p className="text-2xl md:text-3xl font-extrabold text-secondary-blue mb-1 leading-none">{stat.value}</p>
-                                        <p className="text-[9px] md:text-[10px] text-gray-400 font-bold uppercase tracking-widest">{stat.label}</p>
-                                    </div>
-                                ))}
-                            </div>
+                        </div>
+
+                        {/* Stats / "Bullet Points" - Now Under the Pic */}
+                        <div className="w-full max-w-5xl grid grid-cols-2 md:grid-cols-4 gap-4 md:gap-8 mb-16 animate-fade-in delay-500">
+                            {stats.map((stat, i) => (
+                                <div key={i} className="bg-white p-6 md:p-8 rounded-[2.5rem] shadow-[0_15px_40px_-10px_rgba(0,0,0,0.05)] border border-gray-50 text-center hover:shadow-xl hover:-translate-y-1 transition-all duration-300">
+                                    <p className="text-3xl md:text-5xl font-black text-secondary-blue mb-2 leading-none">{stat.value}</p>
+                                    <p className="text-[10px] md:text-xs text-gray-400 font-bold uppercase tracking-[0.2em]">{stat.label}</p>
+                                </div>
+                            ))}
                         </div>
 
                         {/* Minimalist CTA Bottom Section */}
