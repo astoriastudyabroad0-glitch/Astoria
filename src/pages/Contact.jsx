@@ -1,4 +1,4 @@
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import { Phone, MapPin, Instagram, Mail, Send } from 'lucide-react';
 import SectionWrapper from '../components/SectionWrapper';
 import Button from '../components/Button';
