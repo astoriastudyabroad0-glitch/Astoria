@@ -347,6 +347,24 @@ const Dashboard = () => {
                                 </div>
                                 <div className="space-y-6">
                                     <div>
+                                        <label className="block text-xs font-bold text-gray-400 uppercase tracking-widest mb-3">Permalink (Slug)</label>
+                                        <div className="relative">
+                                            <input
+                                                type="text"
+                                                value={formData.slug}
+                                                onChange={(e) => {
+                                                    setFormData({ ...formData, slug: e.target.value });
+                                                    setSlugModified(true);
+                                                }}
+                                                placeholder="url-friendly-slug"
+                                                className="w-full bg-gray-50 border border-gray-100 px-4 py-3 rounded-xl text-sm outline-none focus:ring-2 focus:ring-primary-red font-mono"
+                                            />
+                                            <div className="mt-2 text-[10px] text-blue-500 italic truncate">
+                                                Final URL: /blogs/{formData.slug || 'your-slug'}
+                                            </div>
+                                        </div>
+                                    </div>
+                                    <div>
                                         <label className="block text-xs font-bold text-gray-400 uppercase tracking-widest mb-3">Meta Labels</label>
                                         <input
                                             type="text"
