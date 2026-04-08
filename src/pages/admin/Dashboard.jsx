@@ -1,6 +1,6 @@
 import React, { useState, useEffect } from 'react';
 import { useNavigate } from 'react-router-dom';
-import { Plus, Edit, Trash2, LogOut, Save, X, ArrowLeft, MessageSquare, Newspaper, CheckCircle, User, Phone, Mail, Globe, BookOpen, Star } from 'lucide-react';
+import { Plus, Edit, Trash2, LogOut, Save, X, ArrowLeft, MessageSquare, Newspaper, CheckCircle, User, Phone, Mail, Globe, BookOpen, Star, ExternalLink } from 'lucide-react';
 import { BlogService } from '../../services/BlogService';
 import { MessageService } from '../../services/MessageService';
 import { ReviewService } from '../../services/ReviewService';
@@ -361,6 +361,13 @@ const Dashboard = () => {
                     >
                         <Plus className="w-5 h-5 rotate-45" /> {/* Using Plus rotated as a settings-ish icon */}
                         <span>Settings</span>
+                    </button>
+                    <button
+                        onClick={() => navigate('/')}
+                        className="w-full flex items-center space-x-3 px-4 py-3 rounded-xl transition-all hover:bg-blue-800 text-blue-100 mt-4 border-t border-blue-800/50 pt-6"
+                    >
+                        <ExternalLink className="w-5 h-5" />
+                        <span>View Website</span>
                     </button>
 
 

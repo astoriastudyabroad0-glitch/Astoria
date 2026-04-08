@@ -280,7 +280,7 @@ const Home = () => {
 
                 <div className="text-center mt-12">
                     <Link to="/countries" className="text-secondary-blue font-bold text-lg hover:text-primary-red transition-colors inline-flex items-center">
-                        View All 15+ Destinations <ChevronRight className="ml-2 w-5 h-5" />
+                        View All Destinations <ChevronRight className="ml-2 w-5 h-5" />
                     </Link>
                 </div>
             </SectionWrapper>
