@@ -226,82 +226,140 @@ const Dashboard = () => {
     // Render Logic
     if (isEditing) {
         return (
-            <div className="min-h-screen bg-gray-50 p-8">
-                <div className="max-w-4xl mx-auto bg-white rounded-2xl shadow-lg p-8">
-                    <div className="flex items-center justify-between mb-8">
+            <div className="min-h-screen bg-white flex flex-col">
+                {/* Editor Header */}
+                <header className="h-20 bg-white border-b border-gray-100 flex items-center justify-between px-8 sticky top-0 z-50">
+                    <div className="flex items-center space-x-6">
                         <button
                             onClick={() => setIsEditing(false)}
-                            className="flex items-center text-gray-500 hover:text-secondary-blue"
+                            className="p-2 hover:bg-gray-100 rounded-full transition-colors group"
+                            title="Discard and Exit"
                         >
-                            <ArrowLeft className="w-5 h-5 mr-2" />
-                            Back to Dashboard
+                            <ArrowLeft className="w-6 h-6 text-gray-400 group-hover:text-secondary-blue" />
                         </button>
-                        <h2 className="text-2xl font-bold text-secondary-blue">
-                            {currentPost ? 'Edit Post' : 'Create New Post'}
-                        </h2>
+                        <div>
+                            <h2 className="text-sm font-bold text-gray-400 uppercase tracking-widest leading-none mb-1">
+                                {currentPost ? 'Refining Article' : 'Drafting New Article'}
+                            </h2>
+                            <p className="text-xl font-bold text-secondary-blue truncate max-w-md">
+                                {formData.title || 'Untitled Masterpiece'}
+                            </p>
+                        </div>
                     </div>
 
-                    <form onSubmit={handleSavePost} className="space-y-6">
-                        <div>
-                            <label className="block text-sm font-medium text-gray-700 mb-2">Title</label>
-                            <input
-                                type="text"
-                                value={formData.title}
-                                onChange={(e) => setFormData({ ...formData, title: e.target.value })}
-                                className="w-full px-4 py-3 rounded-xl border border-gray-300 focus:outline-none focus:ring-2 focus:ring-secondary-blue"
-                                required
-                            />
-                        </div>
+                    <div className="flex items-center space-x-4">
+                        <button
+                            onClick={() => setIsEditing(false)}
+                            className="px-6 py-2.5 text-gray-500 font-semibold hover:text-secondary-blue transition-colors"
+                        >
+                            Draft Saved
+                        </button>
+                        <Button 
+                            onClick={handleSavePost}
+                            variant="primary" 
+                            className="bg-primary-red hover:bg-primary-red-hover px-10 py-3 rounded-full text-sm font-bold shadow-xl shadow-primary-red/20 transform hover:-translate-y-0.5"
+                        >
+                            <Save className="w-4 h-4 mr-2" />
+                            Publish Update
+                        </Button>
+                    </div>
+                </header>
 
-                        <div>
-                            <label className="block text-sm font-medium text-gray-700 mb-2">Subtitle (Short Description)</label>
-                            <input
-                                type="text"
-                                value={formData.subtitle}
-                                onChange={(e) => setFormData({ ...formData, subtitle: e.target.value })}
-                                className="w-full px-4 py-3 rounded-xl border border-gray-300 focus:outline-none focus:ring-2 focus:ring-secondary-blue"
-                                required
-                            />
-                        </div>
+                <div className="flex-grow flex flex-col lg:flex-row overflow-hidden">
+                    {/* Left: Editor Column */}
+                    <div className="lg:w-1/2 h-full overflow-y-auto border-r border-gray-100 custom-scrollbar p-10 lg:p-16">
+                        <div className="max-w-2xl mx-auto space-y-12 pb-20">
+                            {/* Hero Image Field */}
+                            <div className="group relative">
+                                <label className="block text-[10px] font-bold text-gray-400 uppercase tracking-widest mb-4">Cover Image URL</label>
+                                <input
+                                    type="text"
+                                    value={formData.image}
+                                    onChange={(e) => setFormData({ ...formData, image: e.target.value })}
+                                    className="w-full bg-gray-50 px-6 py-4 rounded-2xl border-2 border-transparent focus:border-primary-red/20 focus:bg-white transition-all outline-none text-sm text-gray-600"
+                                    placeholder="Paste high-quality image URL here..."
+                                />
+                                <div className="mt-4 rounded-3xl overflow-hidden bg-gray-100 aspect-video relative group">
+                                    {formData.image ? (
+                                        <img 
+                                            src={formData.image} 
+                                            alt="Preview" 
+                                            className="w-full h-full object-cover group-hover:scale-105 transition-transform duration-700" 
+                                        />
+                                    ) : (
+                                        <div className="absolute inset-0 flex flex-col items-center justify-center text-gray-300">
+                                            <Newspaper className="w-12 h-12 mb-4 opacity-50" />
+                                            <p className="text-xs font-bold uppercase tracking-widest">Image Preview</p>
+                                        </div>
+                                    )}
+                                </div>
+                            </div>
 
-                        <div>
-                            <label className="block text-sm font-medium text-gray-700 mb-2">Image URL</label>
-                            <input
-                                type="text"
-                                value={formData.image}
-                                onChange={(e) => setFormData({ ...formData, image: e.target.value })}
-                                className="w-full px-4 py-3 rounded-xl border border-gray-300 focus:outline-none focus:ring-2 focus:ring-secondary-blue"
-                                placeholder="e.g., /assets/study-malta.png or https://..."
-                            />
-                            <p className="text-xs text-gray-500 mt-1">Use specific image paths or external URLs.</p>
-                        </div>
+                            {/* Title Field */}
+                            <div className="space-y-4">
+                                <label className="block text-[10px] font-bold text-gray-400 uppercase tracking-widest">Article Focus</label>
+                                <input
+                                    type="text"
+                                    value={formData.title}
+                                    onChange={(e) => setFormData({ ...formData, title: e.target.value })}
+                                    className="w-full text-4xl lg:text-5xl font-bold text-secondary-blue placeholder:text-gray-200 outline-none border-none p-0 focus:ring-0 leading-tight"
+                                    placeholder="Enter catching title..."
+                                    required
+                                />
+                                <textarea
+                                    value={formData.subtitle}
+                                    onChange={(e) => setFormData({ ...formData, subtitle: e.target.value })}
+                                    className="w-full text-xl text-gray-400 placeholder:text-gray-200 outline-none border-none p-0 focus:ring-0 resize-none h-auto min-h-[60px]"
+                                    placeholder="Add a compelling subheadline that Hooks readers..."
+                                    required
+                                />
+                            </div>
 
-                        <div>
-                            <label className="block text-sm font-medium text-gray-700 mb-2">Content (Markdown Supported)</label>
-                            <textarea
-                                value={formData.content}
-                                onChange={(e) => setFormData({ ...formData, content: e.target.value })}
-                                rows="12"
-                                className="w-full px-4 py-3 rounded-xl border border-gray-300 focus:outline-none focus:ring-2 focus:ring-secondary-blue font-mono text-sm"
-                                placeholder="# Heading\n\nWrite your content here..."
-                                required
-                            ></textarea>
+                            {/* Main Content Editor */}
+                            <div className="space-y-4 border-t border-gray-100 pt-10">
+                                <div className="flex items-center justify-between mb-4">
+                                    <label className="text-[10px] font-bold text-gray-400 uppercase tracking-widest">Story Content</label>
+                                    <div className="flex space-x-2">
+                                        <span className="px-2 py-1 bg-blue-50 text-blue-500 rounded text-[10px] font-bold">Markdown</span>
+                                        <span className="px-2 py-1 bg-gray-50 text-gray-400 rounded text-[10px] font-bold italic">{formData.content?.split(' ').length || 0} Words</span>
+                                    </div>
+                                </div>
+                                <textarea
+                                    value={formData.content}
+                                    onChange={(e) => setFormData({ ...formData, content: e.target.value })}
+                                    className="w-full min-h-[500px] text-lg text-gray-700 placeholder:text-gray-200 outline-none border-none p-0 focus:ring-0 resize-none leading-relaxed font-inter"
+                                    placeholder="Begin your story here. Use Markdown for styling..."
+                                    required
+                                />
+                            </div>
                         </div>
+                    </div>
 
-                        <div className="flex justify-end space-x-4 pt-4 border-t border-gray-100">
-                            <Button
-                                type="button"
-                                variant="outline"
-                                onClick={() => setIsEditing(false)}
-                            >
-                                Cancel
-                            </Button>
-                            <Button type="submit" variant="primary">
-                                <Save className="w-5 h-5 mr-2" />
-                                Save Post
-                            </Button>
+                    {/* Right: Preview Column */}
+                    <div className="hidden lg:block lg:w-1/2 h-full overflow-y-auto bg-gray-50/50 custom-scrollbar p-10 lg:p-16">
+                        <div className="max-w-2xl mx-auto">
+                            <div className="mb-10 flex items-center justify-between">
+                                <span className="bg-green-100 text-green-600 px-4 py-1.5 rounded-full text-[10px] font-bold uppercase tracking-widest border border-green-200 shadow-sm">Live Preview</span>
+                                <span className="text-[10px] font-bold text-gray-400 uppercase tracking-widest">Reader's View</span>
+                            </div>
+
+                            <article className="prose prose-lg prose-slate prose-headings:font-poppins prose-headings:text-secondary-blue prose-p:text-gray-600 prose-img:rounded-3xl max-w-none bg-white p-12 rounded-[3rem] shadow-2xl shadow-gray-200/50 min-h-screen">
+                                <div className="mb-10">
+                                    <span className="inline-block px-4 py-1 bg-primary-red/10 text-primary-red rounded-full text-[10px] font-bold uppercase tracking-widest mb-6">Article Preview</span>
+                                    <h1 className="text-4xl lg:text-5xl font-bold text-secondary-blue mb-6 leading-[1.1]">{formData.title || 'Your Title Here'}</h1>
+                                    <p className="text-xl text-gray-400 font-medium italic border-l-4 border-primary-red pl-6 py-2">{formData.subtitle || 'Your subtitle will appear here...'}</p>
+                                </div>
+                                
+                                {formData.image && (
+                                    <img src={formData.image} alt="Cover" className="w-full aspect-video object-cover rounded-[2rem] shadow-xl mb-12" />
+                                )}
+
+                                <div className="text-gray-700 leading-relaxed whitespace-pre-wrap">
+                                    {formData.content || 'Start typing in the editor to see the preview...'}
+                                </div>
+                            </article>
                         </div>
-                    </form>
+                    </div>
                 </div>
             </div>
         );

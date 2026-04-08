@@ -53,48 +53,65 @@ const BlogDetail = () => {
     };
 
     return (
-        <div className="pt-20">
-            {/* Image Header */}
-            <div className="h-[400px] w-full relative">
+        <div className="pt-20 bg-gray-50 min-h-screen">
+            {/* Hero Image Section */}
+            <div className="h-[60vh] w-full relative overflow-hidden">
                 <img
                     src={post.image || 'https://images.unsplash.com/photo-1523050854058-8df90110c9f1?w=800&auto=format&fit=crop&q=60'}
                     alt={post.title}
-                    className="w-full h-full object-cover"
+                    className="w-full h-full object-cover scale-105 animate-fade-in"
                 />
-                <div className="absolute inset-0 bg-black/40"></div>
-                <div className="absolute bottom-0 left-0 right-0 p-8 md:p-16 text-white container-custom">
-                    <Link to="/blogs" className="inline-flex items-center text-white/80 hover:text-white mb-4 transition-colors">
-                        <ArrowLeft className="w-4 h-4 mr-2" />
-                        Back to Blogs
-                    </Link>
-                    <h1 className="text-3xl md:text-5xl font-bold font-poppins mb-4 leading-tight">
-                        {post.title}
-                    </h1>
-                    <div className="flex items-center space-x-4">
-                        <span className="flex items-center text-sm md:text-base bg-primary-red px-3 py-1 rounded-full">
-                            <Calendar className="w-4 h-4 mr-2" />
-                            {post.date}
-                        </span>
+                <div className="absolute inset-0 bg-gradient-to-t from-gray-900 via-gray-900/40 to-transparent"></div>
+                <div className="absolute inset-0 flex flex-col justify-end p-8 md:p-20 container-custom">
+                    <div className="max-w-4xl animate-fade-in-up">
+                        <Link to="/blogs" className="inline-flex items-center text-white/70 hover:text-primary-red mb-6 transition-all group">
+                            <ArrowLeft className="w-5 h-5 mr-2 transform group-hover:-translate-x-1 transition-transform" />
+                            <span className="text-sm font-bold uppercase tracking-widest leading-none">Back to Articles</span>
+                        </Link>
+                        <h1 className="text-4xl md:text-7xl font-bold font-poppins text-white mb-8 leading-[1.1] tracking-tight">
+                            {post.title}
+                        </h1>
+                        <div className="flex items-center space-x-6 text-white/80">
+                            <span className="flex items-center text-sm font-bold uppercase tracking-widest">
+                                <Calendar className="w-4 h-4 mr-2 text-primary-red" />
+                                {post.date}
+                            </span>
+                            <span className="w-1.5 h-1.5 rounded-full bg-primary-red"></span>
+                            <span className="text-sm font-bold uppercase tracking-widest">
+                                {post.content?.split(' ').length || 0} Words
+                            </span>
+                        </div>
                     </div>
                 </div>
             </div>
 
-            {/* Content Body */}
-            <SectionWrapper background="white" className="max-w-4xl mx-auto">
-                <article className="prose lg:prose-xl max-w-none">
-                    {renderContent(post.content)}
-                </article>
+            {/* Content Section */}
+            <div className="container-custom -translate-y-20 relative z-20 pb-20">
+                <div className="max-w-4xl mx-auto bg-white rounded-[3rem] shadow-2xl shadow-gray-200/50 p-8 md:p-16 lg:p-20 overflow-hidden animate-fade-in-up delay-200 border border-gray-100">
+                    <p className="text-xl md:text-2xl text-gray-500 font-medium italic border-l-8 border-primary-red pl-8 mb-16 leading-relaxed bg-gray-50/50 py-8 rounded-r-3xl pr-8">
+                        {post.subtitle}
+                    </p>
 
-                <div className="border-t border-gray-200 mt-12 pt-8 flex justify-between items-center">
-                    <Button to="/contact" variant="primary">
-                        Contact Us About This
-                    </Button>
-                    <button className="flex items-center text-gray-500 hover:text-secondary-blue">
-                        <Share2 className="w-5 h-5 mr-2" />
-                        Share Article
-                    </button>
+                    <article className="prose prose-lg md:prose-xl max-w-none prose-headings:font-poppins prose-headings:text-secondary-blue prose-p:text-gray-600 prose-p:leading-loose prose-strong:text-secondary-blue prose-a:text-primary-red hover:prose-a:underline">
+                        {renderContent(post.content)}
+                    </article>
+
+                    <div className="border-t border-gray-100 mt-20 pt-10 flex flex-col md:flex-row justify-between items-center space-y-6 md:space-y-0 text-center md:text-left">
+                        <div>
+                            <h4 className="text-secondary-blue font-bold text-lg mb-2">Interested in this topic?</h4>
+                            <p className="text-gray-400 text-sm">Consult with our experts for personalized guidance.</p>
+                        </div>
+                        <div className="flex items-center space-x-4">
+                            <Button to="/contact" variant="primary" className="px-8 rounded-full shadow-lg shadow-primary-red/20 transform hover:-translate-y-1">
+                                Book Free Consultation
+                            </Button>
+                            <button className="p-3 rounded-full border border-gray-200 text-gray-400 hover:text-primary-red hover:border-primary-red transition-all">
+                                <Share2 className="w-5 h-5" />
+                            </button>
+                        </div>
+                    </div>
                 </div>
-            </SectionWrapper>
+            </div>
         </div>
     );
 };

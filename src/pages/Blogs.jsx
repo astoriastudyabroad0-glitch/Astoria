@@ -18,16 +18,20 @@ const Blogs = () => {
     return (
         <div className="pt-20">
             {/* Hero Section */}
-            <section className="bg-secondary-blue text-white py-16">
-                <div className="container-custom text-center">
-                    <div className="inline-flex items-center justify-center w-16 h-16 bg-white/10 rounded-full mb-6 backdrop-blur-sm">
-                        <Newspaper className="w-8 h-8 text-white" />
+            <section className="bg-secondary-blue text-white py-24 relative overflow-hidden">
+                <div className="absolute top-0 right-0 w-1/3 h-full bg-primary-red/5 skew-x-12 translate-x-20"></div>
+                <div className="absolute bottom-0 left-0 w-64 h-64 bg-primary-red/10 rounded-full blur-[100px] -translate-x-1/2 translate-y-1/2"></div>
+                
+                <div className="container-custom relative z-10 text-center">
+                    <div className="inline-flex items-center px-4 py-2 rounded-full bg-white/10 border border-white/20 text-white text-[10px] font-bold uppercase tracking-widest mb-8 backdrop-blur-md animate-fade-in">
+                        <span className="w-2 h-2 rounded-full bg-primary-red mr-3 animate-pulse"></span>
+                        Latest from Astoria
                     </div>
-                    <h1 className="font-poppins font-bold text-4xl md:text-5xl mb-4">
-                        News & Updates
+                    <h1 className="font-poppins font-bold text-5xl md:text-7xl mb-6 tracking-tight animate-fade-in-up">
+                        News & <span className="text-primary-red">Updates</span>
                     </h1>
-                    <p className="text-xl max-w-2xl mx-auto text-gray-200">
-                        Stay informed about the latest study abroad opportunities, visa policies, and success stories.
+                    <p className="text-xl max-w-2xl mx-auto text-gray-300 leading-relaxed animate-fade-in-up delay-100">
+                        Stay informed about the latest study abroad opportunities, visa policies, and success stories from our global student community.
                     </p>
                 </div>
             </section>
@@ -36,8 +40,8 @@ const Blogs = () => {
             <SectionWrapper background="light">
                 {posts.length > 0 ? (
                     <div className="grid md:grid-cols-2 lg:grid-cols-3 gap-8">
-                        {posts.map((post) => (
-                            <BlogCard key={post.id} post={post} />
+                        {posts.map((post, index) => (
+                            <BlogCard key={post.id} post={post} index={index} />
                         ))}
                     </div>
                 ) : (
