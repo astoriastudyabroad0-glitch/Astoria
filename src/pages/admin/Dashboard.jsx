@@ -90,30 +90,17 @@ const Dashboard = () => {
         }
     }, [formData.title, slugModified]);
 
-    const insertMarkdown = (prefix, suffix = '') => {
-        const textarea = document.getElementById('blog-editor-textarea');
-        if (!textarea) return;
+    const applyStyle = (command, value = null) => {
+        document.execCommand(command, false, value);
+    };
 
-        const start = textarea.selectionStart;
-        const end = textarea.selectionEnd;
-        const text = textarea.value;
-        const selection = text.substring(start, end);
-        
-        const before = text.substring(0, start);
-        const after = text.substring(end);
-        
-        const newText = before + prefix + selection + suffix + after;
-        
-        setFormData({ ...formData, content: newText });
-        
-        // Re-focus and set cursor
-        setTimeout(() => {
-            textarea.focus();
-            textarea.setSelectionRange(
-                start + prefix.length,
-                end + prefix.length
-            );
-        }, 10);
+    const handleColorChange = (e) => {
+        applyStyle('foreColor', e.target.value);
+    };
+
+    const handleSizeChange = (e) => {
+        // execCommand 'fontSize' uses 1-7. We can map our values.
+        applyStyle('fontSize', e.target.value);
     };
 
 
@@ -179,10 +166,15 @@ const Dashboard = () => {
 
     const handleSavePost = async (e) => {
         e.preventDefault();
+        const editor = document.getElementById('rich-text-editor');
+        const content = editor ? editor.innerHTML : formData.content;
+        
+        const dataToSave = { ...formData, content };
+
         if (currentPost) {
-            await BlogService.update(currentPost.id, formData);
+            await BlogService.update(currentPost.id, dataToSave);
         } else {
-            await BlogService.create(formData);
+            await BlogService.create(dataToSave);
         }
         setIsEditing(false);
         loadData();
@@ -284,36 +276,26 @@ const Dashboard = () => {
     }
 
     // Render Logic
-    if (isEditing) {
+    if (isEditing && activeTab === 'blogs') {
         return (
-            <div className="min-h-screen bg-[#F1F3F4] flex flex-col font-sans overflow-hidden">
-                {/* 1. Blogger Top Bar (Orange) */}
-                <header className="h-14 bg-white border-b border-gray-200 flex items-center justify-between px-4 sticky top-0 z-[60]">
+            <div className="fixed inset-0 z-[100] bg-white flex flex-col overflow-hidden font-sans">
+                <header className="h-16 bg-white border-b border-gray-100 px-6 flex items-center justify-between z-50">
                     <div className="flex items-center space-x-4">
-                        <button onClick={() => setIsEditing(false)} className="p-2 hover:bg-gray-100 rounded-full transition-colors group">
-                            <ArrowLeft className="w-5 h-5 text-gray-600" />
+                        <button onClick={() => setIsEditing(false)} className="p-2 hover:bg-gray-100 rounded-full text-gray-400 transition-colors">
+                            <ArrowLeft className="w-6 h-6" />
                         </button>
-                        <div className="flex items-center">
-                            <div className="w-8 h-8 bg-[#FB8C00] rounded flex items-center justify-center mr-3 shadow-sm">
-                                <span className="text-white font-bold text-lg">B</span>
-                            </div>
-                            <span className="text-gray-700 font-medium truncate max-w-[200px] md:max-w-md">
-                                {formData.title || 'Draft'}
+                        <div className="flex items-center space-x-2">
+                            <Newspaper className="w-5 h-5 text-primary-red" />
+                            <span className="text-gray-700 font-bold">
+                                {currentPost ? 'Edit Post' : 'New Post'}
                             </span>
                         </div>
                     </div>
 
-                    <div className="flex items-center space-x-2">
-                        <button 
-                            onClick={() => window.open(`/blogs/${currentPost?.id || ''}`, '_blank')}
-                            className="p-2 hover:bg-gray-100 rounded-full text-gray-600 flex items-center space-x-2 px-4 transition-all"
-                        >
-                            <Eye className="w-5 h-5" />
-                            <span className="text-sm font-medium hidden md:inline">Preview</span>
-                        </button>
+                    <div className="flex items-center space-x-3">
                         <button 
                             onClick={handleSavePost}
-                            className="bg-[#FB8C00] hover:bg-[#F57C00] text-white px-6 py-2 rounded font-medium text-sm transition-all shadow-sm flex items-center"
+                            className="bg-primary-red hover:bg-primary-red-hover text-white px-8 py-2.5 rounded-xl font-bold text-sm shadow-xl shadow-red-500/20 transition-all flex items-center"
                         >
                             <Save className="w-4 h-4 mr-2" />
                             {currentPost ? 'Update' : 'Publish'}
@@ -321,224 +303,138 @@ const Dashboard = () => {
                     </div>
                 </header>
 
-                <div className="flex-grow flex flex-col md:flex-row overflow-hidden">
-                    {/* Main Writing Area */}
-                    <div className="flex-grow flex flex-col overflow-hidden bg-white">
-                        {/* 2. Notice Area */}
-                        <div className="bg-[#E8F0FE] px-6 py-2 border-b border-[#D1E3FA] flex items-center justify-between">
-                            <div className="flex items-center space-x-3 text-[#1967D2] text-[12px]">
-                                <History className="w-3.5 h-3.5" />
-                                <span>**Try our professional Blogger features**: Manage SEO slugs, tags, and locations directly from the sidebar.</span>
-                            </div>
-                            <button className="text-gray-400 hover:text-gray-600"><X className="w-3.5 h-3.5" /></button>
-                        </div>
-
-                        {/* 3. Title Input */}
-                        <div className="px-6 py-4 border-b border-gray-100 flex items-center">
-                            <input
-                                type="text"
-                                value={formData.title}
-                                placeholder="Title"
-                                onChange={(e) => setFormData({ ...formData, title: e.target.value })}
-                                className="w-full text-lg text-gray-700 outline-none border-none placeholder:text-gray-300 font-medium"
-                                required
-                            />
-                        </div>
-
-                        {/* 4. Toolbar */}
-                        <div className="px-6 py-1.5 bg-white border-b border-gray-100 flex items-center space-x-1 flex-wrap shadow-sm sticky top-0 z-50 overflow-x-auto no-scrollbar">
-                            <button onClick={() => insertMarkdown('# ', ' #')} className="p-1.5 hover:bg-gray-100 rounded text-gray-600" title="Heading"><Type className="w-4 h-4" /></button>
-                            <div className="w-px h-6 bg-gray-200 mx-1"></div>
-                            <button onClick={() => insertMarkdown('**', '**')} className="p-1.5 hover:bg-gray-100 rounded text-gray-600" title="Bold"><Bold className="w-4 h-4" /></button>
-                            <button onClick={() => insertMarkdown('*', '*')} className="p-1.5 hover:bg-gray-100 rounded text-gray-600" title="Italic"><Italic className="w-4 h-4" /></button>
-                            <div className="w-px h-6 bg-gray-200 mx-1"></div>
-                            <button onClick={() => insertMarkdown('[', '](url)')} className="p-1.5 hover:bg-gray-100 rounded text-gray-600" title="Link"><LinkIcon className="w-4 h-4" /></button>
-                            <button onClick={() => insertMarkdown('\n![Image Description](', ')') } className="p-1.5 hover:bg-gray-100 rounded text-gray-600" title="Image"><ImageIcon className="w-4 h-4" /></button>
-                            <div className="w-px h-6 bg-gray-200 mx-1"></div>
-                            <button onClick={() => insertMarkdown('\n- ')} className="p-1.5 hover:bg-gray-100 rounded text-gray-600" title="Bullet List"><List className="w-4 h-4" /></button>
-                            <button onClick={() => insertMarkdown('\n1. ')} className="p-1.5 hover:bg-gray-100 rounded text-gray-600" title="Numbered List"><ListOrdered className="w-4 h-4" /></button>
-                            <button onClick={() => insertMarkdown('\n> ')} className="p-1.5 hover:bg-gray-100 rounded text-gray-600" title="Quote"><Quote className="w-4 h-4" /></button>
-                            <div className="w-px h-6 bg-gray-200 mx-1"></div>
-                            <button onClick={() => insertMarkdown('\n--- ')} className="p-1.5 hover:bg-gray-100 rounded text-xs font-bold text-gray-400" title="Separator">HR</button>
-                            <div className="w-px h-6 bg-gray-200 mx-1"></div>
-                            <button onClick={() => setFormData({...formData, content: ''})} className="p-1.5 hover:bg-gray-100 rounded text-red-500" title="Clear All"><Trash2 className="w-4 h-4" /></button>
-                        </div>
-
-                        {/* 5. Main Content Area */}
-                        <div className="flex-grow overflow-y-auto p-4 md:p-10 bg-[#F8F9FA] flex justify-center custom-scrollbar">
-                            <div className="max-w-4xl w-full h-full bg-white shadow-lg border border-gray-200 p-6 md:p-12 min-h-[1000px] animate-fade-in relative">
-                                <textarea
-                                    id="blog-editor-textarea"
-                                    value={formData.content}
-                                    onChange={(e) => setFormData({ ...formData, content: e.target.value })}
-                                    className="w-full h-full outline-none border-none resize-none text-gray-700 leading-relaxed font-serif text-lg placeholder:text-gray-200"
-                                    placeholder="Begin your post here..."
+                <div className="flex-grow overflow-y-auto bg-gray-50 pb-20">
+                    <div className="container-custom py-10 max-w-4xl">
+                        {/* Main Settings Card */}
+                        <div className="bg-white rounded-3xl shadow-xl border border-gray-100 p-8 space-y-8 mb-8">
+                            <div>
+                                <label className="block text-xs font-bold text-gray-400 uppercase tracking-widest mb-3">Post Title</label>
+                                <input
+                                    type="text"
+                                    value={formData.title}
+                                    placeholder="Enter reaching title..."
+                                    onChange={(e) => setFormData({ ...formData, title: e.target.value })}
+                                    className="w-full text-4xl font-bold text-secondary-blue outline-none border-b-2 border-gray-50 focus:border-primary-red transition-all pb-4 placeholder:text-gray-100"
                                     required
                                 />
                             </div>
-                        </div>
-                    </div>
 
-                    {/* Right Settings Sidebar */}
-                    <div className="w-full md:w-[320px] bg-white border-l border-gray-200 flex flex-col overflow-hidden">
-                        <div className="p-4 border-b border-gray-100 bg-[#F8F9FA]">
-                            <h3 className="text-xs font-bold text-gray-400 uppercase tracking-widest">Post Settings</h3>
-                        </div>
-
-                        <div className="flex-grow overflow-y-auto custom-scrollbar">
-                            {/* Labels Section */}
-                            <div className="border-b border-gray-100">
-                                <button 
-                                    onClick={() => setActiveSettingTab(activeSettingTab === 'labels' ? '' : 'labels')}
-                                    className="w-full px-5 py-4 flex items-center justify-between hover:bg-gray-50 transition-colors"
-                                >
-                                    <div className="flex items-center space-x-3">
-                                        <Hash className="w-4 h-4 text-gray-400" />
-                                        <span className="text-sm font-semibold text-gray-700">Labels</span>
-                                    </div>
-                                    {activeSettingTab === 'labels' ? <ChevronDown className="w-4 h-4 text-gray-400" /> : <ChevronRight className="w-4 h-4 text-gray-400" />}
-                                </button>
-                                {activeSettingTab === 'labels' && (
-                                    <div className="px-5 pb-6 animate-fade-in">
-                                        <div className="bg-gray-50 p-3 rounded-lg border border-gray-200">
-                                            <input
-                                                type="text"
-                                                value={formData.labels}
-                                                onChange={(e) => setFormData({ ...formData, labels: e.target.value })}
-                                                placeholder="Separate tags by commas"
-                                                className="w-full bg-transparent border-none outline-none text-sm text-gray-600 placeholder:text-gray-400"
-                                            />
+                            <div className="grid md:grid-cols-2 gap-8">
+                                <div>
+                                    <label className="block text-xs font-bold text-gray-400 uppercase tracking-widest mb-3">Master Cover Image</label>
+                                    <div className="flex flex-col space-y-4">
+                                        <div className="relative aspect-video rounded-2xl bg-gray-50 border-2 border-dashed border-gray-200 flex items-center justify-center overflow-hidden group">
+                                            {formData.image ? (
+                                                <img src={formData.image} alt="Cover" className="w-full h-full object-cover" />
+                                            ) : (
+                                                <ImageIcon className="w-12 h-12 text-gray-200" />
+                                            )}
+                                            <label className="absolute inset-0 bg-black/40 opacity-0 group-hover:opacity-100 transition-opacity flex items-center justify-center cursor-pointer">
+                                                <div className="bg-white p-3 rounded-full shadow-xl">
+                                                    <Upload className="w-6 h-6 text-primary-red" />
+                                                </div>
+                                                <input type="file" className="hidden" accept="image/*" onChange={handleImageUpload} />
+                                            </label>
                                         </div>
-                                    </div>
-                                )}
-                            </div>
-
-                            {/* Published Section */}
-                            <div className="border-b border-gray-100">
-                                <button 
-                                    onClick={() => setActiveSettingTab(activeSettingTab === 'published' ? '' : 'published')}
-                                    className="w-full px-5 py-4 flex items-center justify-between hover:bg-gray-50 transition-colors"
-                                >
-                                    <div className="flex items-center space-x-3">
-                                        <CalendarIcon className="w-4 h-4 text-gray-400" />
-                                        <span className="text-sm font-semibold text-gray-700">Published on</span>
-                                    </div>
-                                    {activeSettingTab === 'published' ? <ChevronDown className="w-4 h-4 text-gray-400" /> : <ChevronRight className="w-4 h-4 text-gray-400" />}
-                                </button>
-                                {activeSettingTab === 'published' && (
-                                    <div className="px-5 pb-6 animate-fade-in">
-                                        <input
-                                            type="date"
-                                            value={formData.published_at}
-                                            onChange={(e) => setFormData({ ...formData, published_at: e.target.value })}
-                                            className="w-full bg-gray-50 p-2 rounded border border-gray-200 text-sm text-gray-600 outline-none"
-                                        />
-                                    </div>
-                                )}
-                            </div>
-
-                            {/* Permalink Section */}
-                            <div className="border-b border-gray-100">
-                                <button 
-                                    onClick={() => setActiveSettingTab(activeSettingTab === 'permalink' ? '' : 'permalink')}
-                                    className="w-full px-5 py-4 flex items-center justify-between hover:bg-gray-50 transition-colors"
-                                >
-                                    <div className="flex items-center space-x-3">
-                                        <LinkIcon className="w-4 h-4 text-gray-400" />
-                                        <span className="text-sm font-semibold text-gray-700">Permalink</span>
-                                    </div>
-                                    {activeSettingTab === 'permalink' ? <ChevronDown className="w-4 h-4 text-gray-400" /> : <ChevronRight className="w-4 h-4 text-gray-400" />}
-                                </button>
-                                {activeSettingTab === 'permalink' && (
-                                    <div className="px-5 pb-6 animate-fade-in space-y-3">
-                                        <div className="bg-gray-50 p-3 rounded-lg border border-gray-200">
-                                            <p className="text-[10px] text-gray-400 uppercase font-bold mb-1">Custom Slug</p>
-                                            <input
-                                                type="text"
-                                                value={formData.slug}
-                                                onChange={(e) => {
-                                                    setFormData({ ...formData, slug: e.target.value });
-                                                    setSlugModified(true);
-                                                }}
-                                                className="w-full bg-transparent border-none outline-none text-sm text-gray-600 font-mono"
-                                            />
-                                        </div>
-                                        <p className="text-xs text-blue-500 truncate italic">/blogs/{formData.slug || 'your-slug'}</p>
-                                    </div>
-                                )}
-                            </div>
-
-                            {/* Location Section */}
-                            <div className="border-b border-gray-100">
-                                <button 
-                                    onClick={() => setActiveSettingTab(activeSettingTab === 'location' ? '' : 'location')}
-                                    className="w-full px-5 py-4 flex items-center justify-between hover:bg-gray-50 transition-colors"
-                                >
-                                    <div className="flex items-center space-x-3">
-                                        <MapPin className="w-4 h-4 text-gray-400" />
-                                        <span className="text-sm font-semibold text-gray-700">Location</span>
-                                    </div>
-                                    {activeSettingTab === 'location' ? <ChevronDown className="w-4 h-4 text-gray-400" /> : <ChevronRight className="w-4 h-4 text-gray-400" />}
-                                </button>
-                                {activeSettingTab === 'location' && (
-                                    <div className="px-5 pb-6 animate-fade-in">
                                         <input
                                             type="text"
-                                            value={formData.location}
-                                            onChange={(e) => setFormData({ ...formData, location: e.target.value })}
-                                            placeholder="Add location"
-                                            className="w-full bg-gray-50 p-2 rounded border border-gray-200 text-sm text-gray-600 outline-none"
+                                            value={formData.image}
+                                            onChange={(e) => setFormData({ ...formData, image: e.target.value })}
+                                            placeholder="Or paste external image URL..."
+                                            className="w-full bg-gray-50 border border-gray-100 px-4 py-3 rounded-xl text-sm outline-none focus:ring-2 focus:ring-primary-red"
                                         />
                                     </div>
-                                )}
-                            </div>
-
-                            {/* Master Cover Image Section */}
-                            <div className="p-5 bg-[#F8F9FA] mt-4">
-                                <p className="text-[10px] font-bold text-gray-400 uppercase tracking-widest mb-4">Master Cover Image</p>
-                                <div className="space-y-4">
-                                    <div className="flex flex-col space-y-2">
+                                </div>
+                                <div className="space-y-6">
+                                    <div>
+                                        <label className="block text-xs font-bold text-gray-400 uppercase tracking-widest mb-3">Meta Labels</label>
                                         <input
-                                            type="file"
-                                            id="blogger-image-upload"
-                                            className="hidden"
-                                            accept="image/*"
-                                            onChange={handleImageUpload}
-                                            disabled={uploadingImage}
+                                            type="text"
+                                            value={formData.labels}
+                                            onChange={(e) => setFormData({ ...formData, labels: e.target.value })}
+                                            placeholder="e.g., Canada, Study Abroad"
+                                            className="w-full bg-gray-50 border border-gray-100 px-4 py-3 rounded-xl text-sm outline-none focus:ring-2 focus:ring-primary-red"
                                         />
-                                        <label
-                                            htmlFor="blogger-image-upload"
-                                            className="w-full px-4 py-2 bg-white border border-gray-200 rounded text-xs font-semibold text-gray-600 cursor-pointer hover:bg-gray-50 transition-colors flex items-center justify-center text-center shadow-sm"
-                                        >
-                                            {uploadingImage ? <Loader2 className="w-3 h-3 mr-2 animate-spin" /> : <Upload className="w-3 h-3 mr-2" />}
-                                            {uploadingImage ? 'Uploading...' : 'Choose from Device'}
-                                        </label>
                                     </div>
-                                    <div className="bg-white rounded-xl border border-gray-200 overflow-hidden min-h-[150px] flex items-center justify-center relative group">
-                                        {formData.image ? (
-                                            <img 
-                                                src={formData.image} 
-                                                alt="Featured" 
-                                                className="w-full h-full object-contain p-2" 
+                                    <div className="grid grid-cols-2 gap-4">
+                                        <div>
+                                            <label className="block text-xs font-bold text-gray-400 uppercase tracking-widest mb-3">Location</label>
+                                            <input
+                                                type="text"
+                                                value={formData.location}
+                                                onChange={(e) => setFormData({ ...formData, location: e.target.value })}
+                                                placeholder="e.g. Dhaka"
+                                                className="w-full bg-gray-50 border border-gray-100 px-4 py-3 rounded-xl text-sm outline-none focus:ring-2 focus:ring-primary-red"
                                             />
-                                        ) : (
-                                            <ImageIcon className="w-8 h-8 text-gray-200" />
-                                        )}
+                                        </div>
+                                        <div>
+                                            <label className="block text-xs font-bold text-gray-400 uppercase tracking-widest mb-3">Date</label>
+                                            <input
+                                                type="date"
+                                                value={formData.published_at}
+                                                onChange={(e) => setFormData({ ...formData, published_at: e.target.value })}
+                                                className="w-full bg-gray-50 border border-gray-100 px-4 py-3 rounded-xl text-sm outline-none focus:ring-2 focus:ring-primary-red"
+                                            />
+                                        </div>
                                     </div>
-                                    <input
-                                        type="text"
-                                        value={formData.image}
-                                        onChange={(e) => setFormData({ ...formData, image: e.target.value })}
-                                        placeholder="Or paste external image URL"
-                                        className="w-full bg-white border border-gray-200 px-3 py-2 rounded text-xs text-gray-600 focus:outline-none focus:ring-1 focus:ring-[#FB8C00]"
-                                    />
                                 </div>
                             </div>
                         </div>
 
-                        <div className="p-4 border-t border-gray-100 bg-[#F8F9FA] text-center">
-                            <p className="text-[9px] text-gray-400 uppercase font-bold tracking-widest leading-none">Powered by Astoria Engine</p>
+                        {/* Visual Toolbar */}
+                        <div className="bg-white border border-gray-100 rounded-t-3xl p-4 flex items-center space-x-2 sticky top-0 z-[60] shadow-sm flex-wrap gap-y-3">
+                            {/* Text Size */}
+                            <select 
+                                onChange={(e) => applyStyle('fontSize', e.target.value)}
+                                className="bg-gray-50 border border-gray-200 rounded-lg px-3 py-1.5 text-xs font-bold text-gray-600 outline-none"
+                            >
+                                <option value="3">Size: Medium</option>
+                                <option value="1">Small</option>
+                                <option value="4">Large</option>
+                                <option value="6">Extra Large</option>
+                                <option value="7">Heading</option>
+                            </select>
+
+                            <div className="w-px h-6 bg-gray-100 mx-2"></div>
+
+                            {/* Colors */}
+                            <div className="flex items-center space-x-1">
+                                <button onClick={() => applyStyle('foreColor', '#E4312B')} className="w-6 h-6 rounded-full bg-primary-red border border-gray-200" title="Astoria Red" />
+                                <button onClick={() => applyStyle('foreColor', '#0A2A43')} className="w-6 h-6 rounded-full bg-secondary-blue border border-gray-200" title="Astoria Navy" />
+                                <button onClick={() => applyStyle('foreColor', '#F5A623')} className="w-6 h-6 rounded-full bg-accent-gold border border-gray-200" title="Gold" />
+                                <button onClick={() => applyStyle('foreColor', '#000000')} className="w-6 h-6 rounded-full bg-black border border-gray-200" title="Black" />
+                                <input type="color" onChange={(e) => applyStyle('foreColor', e.target.value)} className="w-6 h-6 p-0 border-none outline-none cursor-pointer" title="Custom Color" />
+                            </div>
+
+                            <div className="w-px h-6 bg-gray-100 mx-2"></div>
+
+                            {/* Standard Formatting */}
+                            <button onClick={() => applyStyle('bold')} className="p-2 hover:bg-gray-100 rounded-xl transition-colors" title="Bold"><Bold size={18} /></button>
+                            <button onClick={() => applyStyle('italic')} className="p-2 hover:bg-gray-100 rounded-xl transition-colors" title="Italic"><Italic size={18} /></button>
+                            <button onClick={() => applyStyle('insertUnorderedList')} className="p-2 hover:bg-gray-100 rounded-xl transition-colors" title="Bullet Points"><List size={18} /></button>
+                            
+                            <div className="w-px h-6 bg-gray-100 mx-2"></div>
+                            
+                            <button onClick={() => applyStyle('justifyLeft')} className="p-2 hover:bg-gray-100 rounded-xl transition-colors"><AlignLeft size={18} /></button>
+                            <button onClick={() => applyStyle('justifyCenter')} className="p-2 hover:bg-gray-100 rounded-xl transition-colors"><AlignCenter size={18} /></button>
+                            
+                            <div className="w-px h-6 bg-gray-100 mx-2"></div>
+                            
+                            <button onClick={() => {
+                                const url = prompt('Enter URL:');
+                                if(url) applyStyle('createLink', url);
+                            }} className="p-2 hover:bg-gray-100 rounded-xl transition-colors"><LinkIcon size={18} /></button>
+                            <button onClick={() => applyStyle('removeFormat')} className="p-2 hover:bg-gray-100 rounded-xl transition-colors text-red-500"><X size={18} /></button>
                         </div>
+
+                        {/* Rich Text Editor Area */}
+                        <div 
+                            id="rich-text-editor"
+                            contentEditable
+                            dangerouslySetInnerHTML={{ __html: formData.content }}
+                            className="bg-white border-x border-b border-gray-100 rounded-b-3xl p-10 min-h-[600px] outline-none prose prose-lg max-w-none font-serif shadow-xl"
+                            placeholder="Write your story here..."
+                        />
                     </div>
                 </div>
             </div>

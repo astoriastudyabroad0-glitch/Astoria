@@ -29,27 +29,14 @@ const BlogDetail = () => {
     if (loading) return <div className="pt-32 text-center">Loading...</div>;
     if (!post) return null;
 
-    // Simple Markdown Render Helper
+    // Render HTML content safely
     const renderContent = (content) => {
-        return content.split('\n').map((line, index) => {
-            if (line.startsWith('# ')) {
-                return <h1 key={index} className="text-3xl font-bold text-secondary-blue mt-8 mb-4">{line.replace('# ', '')}</h1>;
-            }
-            if (line.startsWith('## ')) {
-                return <h2 key={index} className="text-2xl font-semibold text-secondary-blue mt-6 mb-3">{line.replace('## ', '')}</h2>;
-            }
-            if (line.startsWith('- ')) {
-                return <li key={index} className="ml-4 list-disc text-gray-700 mb-2">{line.replace('- ', '')}</li>;
-            }
-            // Very basic numbered list check
-            if (/^\d+\./.test(line)) {
-                return <li key={index} className="ml-4 list-decimal text-gray-700 mb-2">{line.replace(/^\d+\.\s*/, '')}</li>;
-            }
-            if (line.trim() === '') {
-                return <br key={index} />;
-            }
-            return <p key={index} className="text-gray-700 leading-relaxed mb-4">{line}</p>;
-        });
+        return (
+            <div 
+                className="rich-text-content"
+                dangerouslySetInnerHTML={{ __html: content }} 
+            />
+        );
     };
 
     return (

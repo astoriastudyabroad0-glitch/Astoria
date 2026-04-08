@@ -3,6 +3,12 @@ import { Calendar, ArrowRight } from 'lucide-react';
 import { Link } from 'react-router-dom';
 
 const BlogCard = ({ post, index = 0 }) => {
+    const stripHTML = (html) => {
+        const tmp = document.createElement('DIV');
+        tmp.innerHTML = html;
+        return tmp.textContent || tmp.innerText || '';
+    };
+
     return (
         <div 
             className="bg-white rounded-[2rem] shadow-sm hover:shadow-2xl transition-all duration-500 border border-gray-100 flex flex-col h-full group overflow-hidden animate-fade-in-up"
@@ -43,7 +49,7 @@ const BlogCard = ({ post, index = 0 }) => {
                         </Link>
                     </h3>
                     <p className="text-gray-500 text-sm leading-relaxed line-clamp-3">
-                        {post.subtitle}
+                        {stripHTML(post.subtitle || '')}
                     </p>
                 </div>
 
