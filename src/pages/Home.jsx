@@ -161,7 +161,7 @@ const Home = () => {
                         {/* Status Badge */}
                         <div className="inline-flex items-center px-5 py-2.5 rounded-full bg-white border border-gray-100 text-secondary-blue text-xs font-bold mb-10 shadow-xl shadow-blue-900/5 animate-fade-in-up">
                             <span className="w-2 h-2 rounded-full bg-primary-red mr-3 animate-pulse"></span>
-                            Official 2025 Admissions Gateway
+                            Official 2026 Admissions Gateway
                         </div>
 
                         {/* Massive Branding Image */}
@@ -198,6 +198,12 @@ const Home = () => {
                                     <p className="text-[10px] md:text-xs text-gray-400 font-bold uppercase tracking-[0.2em]">{stat.label}</p>
                                 </div>
                             ))}
+                        </div>
+
+                        {/* Top Rated Badge as Bullet Point */}
+                        <div className="inline-flex items-center px-6 py-3 rounded-full bg-blue-50/50 border border-blue-100 text-secondary-blue text-sm font-bold mb-8 animate-fade-in delay-700">
+                             <span className="w-2 h-2 rounded-full bg-primary-red mr-3 animate-pulse"></span>
+                             Top Rated Global Study Abroad Agency
                         </div>
 
                         {/* Minimalist CTA Bottom Section */}
@@ -287,7 +293,7 @@ const Home = () => {
                             
                             <div className="absolute bottom-0 left-0 right-0 p-8">
                                 <span className="inline-block px-3 py-1 bg-primary-red text-white text-xs font-bold rounded-full mb-4">
-                                    Intake Open 2025
+                                    Intake Open 2026
                                 </span>
                                 <h3 className="text-3xl font-bold text-white mb-4">{country.name}</h3>
                                 <p className="text-gray-300 text-sm mb-6 line-clamp-2">{country.description}</p>
