@@ -175,18 +175,6 @@ const Home = () => {
                                     className="w-full h-auto object-contain transform transition-transform duration-1000"
                                 />
                                 
-                                {/* Inner Floating Badges Layer - Moved to top only */}
-                                <div className="absolute top-6 right-6 md:top-12 md:right-12">
-                                    <div className="glass px-5 py-2.5 md:px-8 md:py-4 rounded-2xl flex items-center space-x-4 shadow-2xl animate-fade-in delay-700">
-                                        <div className="w-10 h-10 md:w-14 md:h-14 bg-primary-red rounded-xl md:rounded-2xl flex items-center justify-center text-white shadow-lg shadow-primary-red/20">
-                                            <Award className="w-5 h-5 md:w-8 md:h-8" />
-                                        </div>
-                                        <div className="text-secondary-blue">
-                                            <p className="text-[10px] md:text-xs font-bold text-gray-400 uppercase tracking-widest mb-0.5">Global Recognition</p>
-                                            <p className="text-lg md:text-2xl font-black leading-none">Top Rated</p>
-                                        </div>
-                                    </div>
-                                </div>
                             </div>
                         </div>
 
