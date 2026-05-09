@@ -1,9 +1,6 @@
 {
-  "cleanUrls": true,
   "rewrites": [
-    {
-      "source": "/((?!assets/|favicon.ico|vite.svg).*)",
-      "destination": "/index.html"
-    }
+    { "source": "/(admin|blogs|reviews|destinations|settings|messages)(.*)", "destination": "/index.html" },
+    { "source": "/((?!assets/|favicon.ico|vite.svg).*)", "destination": "/index.html" }
   ]
 }
