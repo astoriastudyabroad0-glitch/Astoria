@@ -10,6 +10,7 @@ import { CountryService } from '../../services/CountryService';
 
 import { supabase } from '../../lib/supabaseClient';
 import Button from '../../components/Button';
+import WordEditor from '../../components/admin/WordEditor';
 
 const Dashboard = () => {
     const navigate = useNavigate();
@@ -90,18 +91,6 @@ const Dashboard = () => {
         }
     }, [formData.title, slugModified]);
 
-    const applyStyle = (command, value = null) => {
-        document.execCommand(command, false, value);
-    };
-
-    const handleColorChange = (e) => {
-        applyStyle('foreColor', e.target.value);
-    };
-
-    const handleSizeChange = (e) => {
-        // execCommand 'fontSize' uses 1-7. We can map our values.
-        applyStyle('fontSize', e.target.value);
-    };
 
 
     useEffect(() => {
@@ -166,10 +155,7 @@ const Dashboard = () => {
 
     const handleSavePost = async (e) => {
         e.preventDefault();
-        const editor = document.getElementById('rich-text-editor');
-        const content = editor ? editor.innerHTML : formData.content;
-        
-        const dataToSave = { ...formData, content };
+        const dataToSave = { ...formData };
 
         if (currentPost) {
             await BlogService.update(currentPost.id, dataToSave);
@@ -312,7 +298,7 @@ const Dashboard = () => {
                                 <input
                                     type="text"
                                     value={formData.title}
-                                    placeholder="Enter reaching title..."
+                                    placeholder="Enter a catchy title..."
                                     onChange={(e) => setFormData({ ...formData, title: e.target.value })}
                                     className="w-full text-4xl font-bold text-secondary-blue outline-none border-b-2 border-gray-50 focus:border-primary-red transition-all pb-4 placeholder:text-gray-100"
                                     required
@@ -336,13 +322,6 @@ const Dashboard = () => {
                                                 <input type="file" className="hidden" accept="image/*" onChange={handleImageUpload} />
                                             </label>
                                         </div>
-                                        <input
-                                            type="text"
-                                            value={formData.image}
-                                            onChange={(e) => setFormData({ ...formData, image: e.target.value })}
-                                            placeholder="Or paste external image URL..."
-                                            className="w-full bg-gray-50 border border-gray-100 px-4 py-3 rounded-xl text-sm outline-none focus:ring-2 focus:ring-primary-red"
-                                        />
                                     </div>
                                 </div>
                                 <div className="space-y-6">
@@ -364,27 +343,7 @@ const Dashboard = () => {
                                             </div>
                                         </div>
                                     </div>
-                                    <div>
-                                        <label className="block text-xs font-bold text-gray-400 uppercase tracking-widest mb-3">Meta Labels</label>
-                                        <input
-                                            type="text"
-                                            value={formData.labels}
-                                            onChange={(e) => setFormData({ ...formData, labels: e.target.value })}
-                                            placeholder="e.g., Canada, Study Abroad"
-                                            className="w-full bg-gray-50 border border-gray-100 px-4 py-3 rounded-xl text-sm outline-none focus:ring-2 focus:ring-primary-red"
-                                        />
-                                    </div>
                                     <div className="grid grid-cols-2 gap-4">
-                                        <div>
-                                            <label className="block text-xs font-bold text-gray-400 uppercase tracking-widest mb-3">Location</label>
-                                            <input
-                                                type="text"
-                                                value={formData.location}
-                                                onChange={(e) => setFormData({ ...formData, location: e.target.value })}
-                                                placeholder="e.g. Dhaka"
-                                                className="w-full bg-gray-50 border border-gray-100 px-4 py-3 rounded-xl text-sm outline-none focus:ring-2 focus:ring-primary-red"
-                                            />
-                                        </div>
                                         <div>
                                             <label className="block text-xs font-bold text-gray-400 uppercase tracking-widest mb-3">Date</label>
                                             <input
@@ -394,64 +353,24 @@ const Dashboard = () => {
                                                 className="w-full bg-gray-50 border border-gray-100 px-4 py-3 rounded-xl text-sm outline-none focus:ring-2 focus:ring-primary-red"
                                             />
                                         </div>
+                                        <div>
+                                            <label className="block text-xs font-bold text-gray-400 uppercase tracking-widest mb-3">Meta Labels</label>
+                                            <input
+                                                type="text"
+                                                value={formData.labels}
+                                                onChange={(e) => setFormData({ ...formData, labels: e.target.value })}
+                                                placeholder="e.g., Canada, Study Abroad"
+                                                className="w-full bg-gray-50 border border-gray-100 px-4 py-3 rounded-xl text-sm outline-none focus:ring-2 focus:ring-primary-red"
+                                            />
+                                        </div>
                                     </div>
                                 </div>
                             </div>
                         </div>
 
-                        {/* Visual Toolbar */}
-                        <div className="bg-white border border-gray-100 rounded-t-3xl p-4 flex items-center space-x-2 sticky top-0 z-[60] shadow-sm flex-wrap gap-y-3">
-                            {/* Text Size */}
-                            <select 
-                                onChange={(e) => applyStyle('fontSize', e.target.value)}
-                                className="bg-gray-50 border border-gray-200 rounded-lg px-3 py-1.5 text-xs font-bold text-gray-600 outline-none"
-                            >
-                                <option value="3">Size: Medium</option>
-                                <option value="1">Small</option>
-                                <option value="4">Large</option>
-                                <option value="6">Extra Large</option>
-                                <option value="7">Heading</option>
-                            </select>
-
-                            <div className="w-px h-6 bg-gray-100 mx-2"></div>
-
-                            {/* Colors */}
-                            <div className="flex items-center space-x-1">
-                                <button onClick={() => applyStyle('foreColor', '#E4312B')} className="w-6 h-6 rounded-full bg-primary-red border border-gray-200" title="Astoria Red" />
-                                <button onClick={() => applyStyle('foreColor', '#0A2A43')} className="w-6 h-6 rounded-full bg-secondary-blue border border-gray-200" title="Astoria Navy" />
-                                <button onClick={() => applyStyle('foreColor', '#F5A623')} className="w-6 h-6 rounded-full bg-accent-gold border border-gray-200" title="Gold" />
-                                <button onClick={() => applyStyle('foreColor', '#000000')} className="w-6 h-6 rounded-full bg-black border border-gray-200" title="Black" />
-                                <input type="color" onChange={(e) => applyStyle('foreColor', e.target.value)} className="w-6 h-6 p-0 border-none outline-none cursor-pointer" title="Custom Color" />
-                            </div>
-
-                            <div className="w-px h-6 bg-gray-100 mx-2"></div>
-
-                            {/* Standard Formatting */}
-                            <button onClick={() => applyStyle('bold')} className="p-2 hover:bg-gray-100 rounded-xl transition-colors" title="Bold"><Bold size={18} /></button>
-                            <button onClick={() => applyStyle('italic')} className="p-2 hover:bg-gray-100 rounded-xl transition-colors" title="Italic"><Italic size={18} /></button>
-                            <button onClick={() => applyStyle('insertUnorderedList')} className="p-2 hover:bg-gray-100 rounded-xl transition-colors" title="Bullet Points"><List size={18} /></button>
-                            
-                            <div className="w-px h-6 bg-gray-100 mx-2"></div>
-                            
-                            <button onClick={() => applyStyle('justifyLeft')} className="p-2 hover:bg-gray-100 rounded-xl transition-colors"><AlignLeft size={18} /></button>
-                            <button onClick={() => applyStyle('justifyCenter')} className="p-2 hover:bg-gray-100 rounded-xl transition-colors"><AlignCenter size={18} /></button>
-                            
-                            <div className="w-px h-6 bg-gray-100 mx-2"></div>
-                            
-                            <button onClick={() => {
-                                const url = prompt('Enter URL:');
-                                if(url) applyStyle('createLink', url);
-                            }} className="p-2 hover:bg-gray-100 rounded-xl transition-colors"><LinkIcon size={18} /></button>
-                            <button onClick={() => applyStyle('removeFormat')} className="p-2 hover:bg-gray-100 rounded-xl transition-colors text-red-500"><X size={18} /></button>
-                        </div>
-
-                        {/* Rich Text Editor Area */}
-                        <div 
-                            id="rich-text-editor"
-                            contentEditable
-                            dangerouslySetInnerHTML={{ __html: formData.content }}
-                            className="bg-white border-x border-b border-gray-100 rounded-b-3xl p-10 min-h-[600px] outline-none prose prose-lg max-w-none font-serif shadow-xl"
-                            placeholder="Write your story here..."
+                        <WordEditor 
+                            content={formData.content} 
+                            onChange={(html) => setFormData({ ...formData, content: html })} 
                         />
                     </div>
                 </div>
