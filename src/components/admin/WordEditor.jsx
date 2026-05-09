@@ -1,18 +1,18 @@
 import React, { useState, useCallback, useEffect } from 'react';
 import { useEditor, EditorContent } from '@tiptap/react';
 import StarterKit from '@tiptap/starter-kit';
-import Underline from '@tiptap/extension-underline';
-import Link from '@tiptap/extension-link';
-import Image from '@tiptap/extension-image';
+import { Underline } from '@tiptap/extension-underline';
+import { Link } from '@tiptap/extension-link';
+import { Image } from '@tiptap/extension-image';
 import { Color } from '@tiptap/extension-color';
-import TextStyle from '@tiptap/extension-text-style';
-import Highlight from '@tiptap/extension-highlight';
-import CharacterCount from '@tiptap/extension-character-count';
-import Placeholder from '@tiptap/extension-placeholder';
-import FontFamily from '@tiptap/extension-font-family';
-import TextAlign from '@tiptap/extension-text-align';
-import Subscript from '@tiptap/extension-subscript';
-import Superscript from '@tiptap/extension-superscript';
+import { TextStyle } from '@tiptap/extension-text-style';
+import { Highlight } from '@tiptap/extension-highlight';
+import { CharacterCount } from '@tiptap/extension-character-count';
+import { Placeholder } from '@tiptap/extension-placeholder';
+import { FontFamily } from '@tiptap/extension-font-family';
+import { TextAlign } from '@tiptap/extension-text-align';
+import { Subscript } from '@tiptap/extension-subscript';
+import { Superscript } from '@tiptap/extension-superscript';
 import { 
     Bold, Italic, Underline as UnderlineIcon, Strikethrough, 
     Type, AlignLeft, AlignCenter, AlignRight, AlignJustify, 
