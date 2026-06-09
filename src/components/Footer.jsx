@@ -160,8 +160,19 @@ const Footer = () => {
                 </div>
 
                 {/* Bottom Bar */}
-                <div className="border-t border-gray-700 mt-8 pt-8 text-center text-gray-300 text-sm">
+                <div className="border-t border-gray-700 mt-8 pt-8 flex flex-col md:flex-row justify-between items-center text-center text-gray-300 text-sm">
                     <p>&copy; {currentYear} Astoria Study Abroad. All rights reserved.</p>
+                    <p className="mt-2 md:mt-0 text-gray-400 text-xs">
+                        Created by{' '}
+                        <a
+                            href="https://automationalchemists.com"
+                            target="_blank"
+                            rel="noopener noreferrer"
+                            className="hover:underline hover:text-white transition-colors"
+                        >
+                            Automational Alchemists
+                        </a>
+                    </p>
                 </div>
             </div>
         </footer>
