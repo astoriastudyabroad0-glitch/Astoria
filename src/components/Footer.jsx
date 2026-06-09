@@ -170,7 +170,7 @@ const Footer = () => {
                             rel="noopener noreferrer"
                             className="hover:underline hover:text-white transition-colors"
                         >
-                            Automational Alchemists
+                            Automation Alchemists
                         </a>
                     </p>
                 </div>
