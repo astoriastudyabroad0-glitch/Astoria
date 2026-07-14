@@ -21,6 +21,47 @@ import {
     Subscript as SubscriptIcon, Superscript as SuperscriptIcon,
     Outdent, Indent, Type as CaseIcon
 } from 'lucide-react';
+import { Extension } from '@tiptap/core';
+
+const FontSize = Extension.create({
+  name: 'fontSize',
+  addOptions() {
+    return {
+      types: ['textStyle'],
+    };
+  },
+  addGlobalAttributes() {
+    return [
+      {
+        types: this.options.types,
+        attributes: {
+          fontSize: {
+            default: null,
+            parseHTML: element => element.style.fontSize?.replace(/['"]+/g, ''),
+            renderHTML: attributes => {
+              if (!attributes.fontSize) {
+                return {};
+              }
+              return {
+                style: `font-size: ${attributes.fontSize}`,
+              };
+            },
+          },
+        },
+      },
+    ];
+  },
+  addCommands() {
+    return {
+      setFontSize: fontSize => ({ chain }) => {
+        return chain().setMark('textStyle', { fontSize }).run();
+      },
+      unsetFontSize: () => ({ chain }) => {
+        return chain().setMark('textStyle', { fontSize: null }).removeEmptyTextStyle().run();
+      },
+    };
+  }
+});
 
 const WordEditor = ({ content, onChange }) => {
     const [isLinkDialogOpen, setIsLinkDialogOpen] = useState(false);
@@ -49,6 +90,7 @@ const WordEditor = ({ content, onChange }) => {
                 },
             }),
             TextStyle,
+            FontSize,
             Color,
             FontFamily,
             Highlight.configure({ multicolor: true }),
@@ -62,7 +104,7 @@ const WordEditor = ({ content, onChange }) => {
                 placeholder: 'Write your story here...',
             }),
         ],
-        content: content || '',
+        content: content || '<p></p>',
         onUpdate: ({ editor }) => {
             onChange(editor.getHTML());
         },
@@ -77,7 +119,7 @@ const WordEditor = ({ content, onChange }) => {
 
     // Word-style font size mapping helper
     const setFontSize = (size) => {
-        editor.chain().focus().setMark('textStyle', { fontSize: size + 'pt' }).run();
+        editor.chain().focus().setFontSize(size + 'pt').run();
     };
 
     const addLink = () => {

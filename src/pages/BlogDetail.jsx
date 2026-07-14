@@ -40,8 +40,14 @@ const BlogDetail = () => {
     };
 
     return (
-        <div className="pt-32 pb-20 bg-secondary-blue min-h-screen">
-            <div className="container-custom">
+        <div className="pt-32 pb-20 bg-secondary-blue min-h-screen relative overflow-hidden">
+            {/* Watermark Logo */}
+            <img 
+                src="/logo.png" 
+                alt="" 
+                className="fixed top-1/2 left-1/2 transform -translate-x-1/2 -translate-y-1/2 w-[400px] opacity-10 z-0 pointer-events-none" 
+            />
+            <div className="container-custom relative z-10">
                 <div className="flex flex-col md:flex-row gap-12 items-start">
                     
                     {/* Left Column (Title & Content) - 60% */}
@@ -99,7 +105,7 @@ const BlogDetail = () => {
                         <img
                             src={post.image || 'https://images.unsplash.com/photo-1523050854058-8df90110c9f1?w=800&auto=format&fit=crop&q=60'}
                             alt={post.title}
-                            className="w-full rounded-xl object-cover max-h-[400px] shadow-2xl border-4 border-white/10 animate-fade-in"
+                            className="w-full rounded-xl object-contain max-h-[500px] shadow-2xl border-4 border-white/10 animate-fade-in"
                         />
                     </div>
                 </div>

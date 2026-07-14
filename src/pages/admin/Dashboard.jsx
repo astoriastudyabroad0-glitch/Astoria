@@ -139,10 +139,13 @@ const Dashboard = () => {
     const startEdit = (post) => {
         setCurrentPost(post);
         setFormData({
-            title: post.title,
-            subtitle: post.subtitle,
-            image: post.image,
-            content: post.content
+            title: post.title || '',
+            subtitle: post.subtitle || '',
+            image: post.image || '',
+            content: post.content || '',
+            slug: post.slug || '',
+            published_at: post.date || post.published_at || new Date().toISOString().split('T')[0],
+            labels: Array.isArray(post.meta_labels) ? post.meta_labels.join(', ') : (post.meta_labels || post.labels || '')
         });
         setIsEditing(true);
     };
@@ -155,7 +158,15 @@ const Dashboard = () => {
 
     const handleSavePost = async (e) => {
         e.preventDefault();
-        const dataToSave = { ...formData };
+        const dataToSave = { 
+            title: formData.title,
+            subtitle: formData.subtitle,
+            image: formData.image,
+            content: formData.content,
+            slug: formData.slug,
+            date: formData.published_at,
+            meta_labels: formData.labels.split(',').map(s => s.trim()).filter(Boolean)
+        };
 
         if (currentPost) {
             await BlogService.update(currentPost.id, dataToSave);
