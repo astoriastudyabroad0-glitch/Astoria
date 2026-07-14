@@ -396,7 +396,7 @@ const Home = () => {
                 <div className="relative z-10">
                     <h2 className="text-4xl md:text-6xl font-bold mb-8 leading-tight">Don't Leave Your Future to Chance</h2>
                     <p className="text-xl text-gray-300 mb-12 max-w-2xl mx-auto leading-relaxed">
-                        Our expert consultants provide the strategic edge needed for your international education success. Start your journey today with a free assessment.
+                        Rajshahi's trusted IELTS &amp; PTE specialists helping students study in Australia, Canada, Malta &amp; Malaysia. Get your free assessment today.
                     </p>
                     <div className="flex flex-wrap justify-center gap-6">
                         <Button to="/contact" variant="primary" className="px-12 py-5 text-xl">
