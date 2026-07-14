@@ -1,10 +1,13 @@
-import React from 'react';
+import React, { useEffect } from 'react';
 import { FileCheck, Plane, Award, Home as HomeIcon, Users, CheckCircle, BookOpen, FileText, Search, MessageSquare } from 'lucide-react';
 import SectionWrapper from '../components/SectionWrapper';
 import Card from '../components/Card';
 import Button from '../components/Button';
 
 const Services = () => {
+    useEffect(() => {
+        document.title = "Our Services | IELTS, PTE, Student Visa | Astoria Study Abroad";
+    }, []);
     const services = [
         {
             icon: FileCheck,

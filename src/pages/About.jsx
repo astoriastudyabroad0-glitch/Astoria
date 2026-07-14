@@ -1,9 +1,12 @@
-import React from 'react';
+import React, { useEffect } from 'react';
 import { Target, Eye, Heart, Users, TrendingUp, CheckCircle } from 'lucide-react';
 import SectionWrapper from '../components/SectionWrapper';
 import Card from '../components/Card';
 
 const About = () => {
+    useEffect(() => {
+        document.title = "About Us | Astoria Study Abroad Rajshahi";
+    }, []);
     const values = [
         {
             icon: Target,
@@ -120,21 +123,17 @@ const About = () => {
                     <div className="space-y-4 text-gray-700 text-lg">
                         <p>
                             Founded in 2015, Astoria Study Abroad began with a simple mission: to help talented
-                            students from Bangladesh access world-class education opportunities around the globe.
-                            What started as a small consultancy has grown into one of the most trusted names in
-                            international education consulting.
+                            students from Bangladesh access world-class education opportunities. As a leading study abroad consultant in Rajshahi,
+                            we have grown into one of the most trusted names in international education consulting.
                         </p>
                         <p>
-                            Over the years, we've helped hundreds of students secure admissions to prestigious
-                            universities in Canada, Australia, the United Kingdom, the United States, and across
-                            Europe. Our success is built on a foundation of expertise, integrity, and a genuine
-                            commitment to each student's success.
+                            Over the years, we've helped hundreds of students secure admissions and provided expert student visa guidance for prestigious
+                            universities. We specialize in helping students study in Australia, Canada, Malta, Malaysia, and beyond. From comprehensive IELTS and PTE preparation to final pre-departure briefings, our success is built on a foundation of expertise and a genuine commitment to each student's success.
                         </p>
                         <p>
-                            Today, our team of experienced consultants, former admissions officers, and visa
-                            specialists work together to provide comprehensive support at every stage of your
+                            Today, our team of experienced consultants work together to provide comprehensive support at every stage of your
                             study abroad journey. We don't just help you get admitted – we ensure you're prepared
-                            to thrive in your new academic environment.
+                            to thrive in your new academic environment. Start your journey with our free consultation today.
                         </p>
                     </div>
                 </div>

@@ -10,6 +10,7 @@ const Countries = () => {
     const [loading, setLoading] = useState(true);
 
     useEffect(() => {
+        document.title = "Study in Australia, Canada, Malta & Malaysia | Astoria Study Abroad";
         const fetchCountries = async () => {
             try {
                 const data = await CountryService.getAll();

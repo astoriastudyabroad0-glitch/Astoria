@@ -55,6 +55,7 @@ const Home = () => {
     const [showPopup, setShowPopup] = useState(false);
 
     useEffect(() => {
+        document.title = "Astoria Study Abroad | IELTS & PTE Specialist Rajshahi";
         const timer = setTimeout(() => {
             setShowPopup(true);
         }, 3000); // Show popup after 3 seconds

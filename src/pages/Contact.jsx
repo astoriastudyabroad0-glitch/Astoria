@@ -26,6 +26,7 @@ const Contact = () => {
     const [submitted, setSubmitted] = useState(false);
 
     useEffect(() => {
+        document.title = "Contact Us | Free Consultation | Astoria Study Abroad Rajshahi";
         const fetchSettings = async () => {
             try {
                 const data = await SettingsService.getSettings();

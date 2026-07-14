@@ -8,6 +8,7 @@ const Blogs = () => {
     const [posts, setPosts] = useState([]);
 
     useEffect(() => {
+        document.title = "Study Abroad Blog | Tips for Bangladeshi Students | Astoria Study Abroad";
         const loadPosts = async () => {
             const data = await BlogService.getAll();
             setPosts(data);
