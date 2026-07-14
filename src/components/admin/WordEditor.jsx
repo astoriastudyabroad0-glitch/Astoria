@@ -21,38 +21,29 @@ import {
     Subscript as SubscriptIcon, Superscript as SuperscriptIcon,
     Outdent, Indent, Type as CaseIcon
 } from 'lucide-react';
-import { Extension } from '@tiptap/core';
+import { TextStyle } from '@tiptap/extension-text-style';
 
-const FontSize = Extension.create({
-  name: 'fontSize',
-  addOptions() {
+const FontSize = TextStyle.extend({
+  addAttributes() {
     return {
-      types: ['textStyle'],
-    };
-  },
-  addGlobalAttributes() {
-    return [
-      {
-        types: this.options.types,
-        attributes: {
-          fontSize: {
-            default: null,
-            parseHTML: element => element.style.fontSize?.replace(/['"]+/g, ''),
-            renderHTML: attributes => {
-              if (!attributes.fontSize) {
-                return {};
-              }
-              return {
-                style: `font-size: ${attributes.fontSize}`,
-              };
-            },
-          },
+      ...this.parent?.(),
+      fontSize: {
+        default: null,
+        parseHTML: element => element.style.fontSize?.replace(/['"]+/g, ''),
+        renderHTML: attributes => {
+          if (!attributes.fontSize) {
+            return {};
+          }
+          return {
+            style: `font-size: ${attributes.fontSize}`,
+          };
         },
       },
-    ];
+    };
   },
   addCommands() {
     return {
+      ...this.parent?.(),
       setFontSize: fontSize => ({ chain }) => {
         return chain().setMark('textStyle', { fontSize }).run();
       },
@@ -62,6 +53,37 @@ const FontSize = Extension.create({
     };
   }
 });
+
+const editorExtensions = [
+    StarterKit.configure({
+        heading: { levels: [1, 2, 3, 4] },
+    }),
+    Underline,
+    Link.configure({
+        openOnClick: false,
+        HTMLAttributes: {
+            class: 'text-[#0563c1] underline cursor-pointer',
+        },
+    }),
+    Image.configure({
+        HTMLAttributes: {
+            class: 'max-w-full h-auto mx-auto my-4',
+        },
+    }),
+    FontSize,
+    Color,
+    FontFamily,
+    Highlight.configure({ multicolor: true }),
+    TextAlign.configure({
+        types: ['heading', 'paragraph'],
+    }),
+    Subscript,
+    Superscript,
+    CharacterCount,
+    Placeholder.configure({
+        placeholder: 'Write your story here...',
+    }),
+];
 
 const WordEditor = ({ content, onChange }) => {
     const [isLinkDialogOpen, setIsLinkDialogOpen] = useState(false);
@@ -73,37 +95,7 @@ const WordEditor = ({ content, onChange }) => {
     const [showHighlightPicker, setShowHighlightPicker] = useState(false);
 
     const editor = useEditor({
-        extensions: [
-            StarterKit.configure({
-                heading: { levels: [1, 2, 3, 4] },
-            }),
-            Underline,
-            Link.configure({
-                openOnClick: false,
-                HTMLAttributes: {
-                    class: 'text-[#0563c1] underline cursor-pointer',
-                },
-            }),
-            Image.configure({
-                HTMLAttributes: {
-                    class: 'max-w-full h-auto mx-auto my-4',
-                },
-            }),
-            TextStyle,
-            FontSize,
-            Color,
-            FontFamily,
-            Highlight.configure({ multicolor: true }),
-            TextAlign.configure({
-                types: ['heading', 'paragraph'],
-            }),
-            Subscript,
-            Superscript,
-            CharacterCount,
-            Placeholder.configure({
-                placeholder: 'Write your story here...',
-            }),
-        ],
+        extensions: editorExtensions,
         content: content || '<p></p>',
         onUpdate: ({ editor }) => {
             onChange(editor.getHTML());

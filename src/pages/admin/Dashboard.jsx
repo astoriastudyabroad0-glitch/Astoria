@@ -137,6 +137,7 @@ const Dashboard = () => {
     };
 
     const startEdit = (post) => {
+        console.log("Editing post:", post);
         setCurrentPost(post);
         setFormData({
             title: post.title || '',
