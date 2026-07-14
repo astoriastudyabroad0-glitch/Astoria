@@ -311,52 +311,18 @@ const Home = () => {
                 </div>
             </SectionWrapper>
 
-            {/* Promo Section */}
+            {/* Blog Carousel Section */}
             <SectionWrapper background="secondary" className="relative overflow-hidden">
                 <div className="absolute top-0 right-0 w-1/4 h-full bg-white/5 skew-x-12 translate-x-20"></div>
-                <div className="grid lg:grid-cols-2 gap-16 items-center">
-                    <div>
-                        <h2 className="text-4xl md:text-5xl font-bold mb-8 leading-tight">Apply to Malta with <br />Full Support</h2>
-                        <p className="text-xl text-blue-100 mb-10 leading-relaxed italic border-l-4 border-primary-red pl-6">
-                            "Malta offers the most affordable European education with a 100% English-speaking environment. Perfect for Bangladeshi students seeking PR in the EU."
-                        </p>
-                        <ul className="space-y-4 mb-10">
-                            {[
-                                "No IELTS required for specific programs",
-                                "Work while studying authorized",
-                                "Low cost of living compared to UK/USA",
-                                "99% Visa success rate via Astoria"
-                            ].map((item, i) => (
-                                <li key={i} className="flex items-center text-lg">
-                                    <CheckCircle className="text-primary-red mr-4 w-6 h-6 flex-shrink-0" />
-                                    {item}
-                                </li>
-                            ))}
-                        </ul>
-                        <Button to="/contact" variant="primary" className="px-12">Claim Your Spot Now</Button>
-                    </div>
-                    <div className="relative">
-                        <div className="absolute inset-0 bg-primary-red/10 rounded-3xl -rotate-3 scale-105"></div>
-                        <img 
-                            src={maltaImage} 
-                            alt="Study Malta" 
-                            className="relative z-10 rounded-3xl shadow-2xl border-4 border-white/10"
-                        />
-                    </div>
+                <div className="text-center mb-12 relative z-10">
+                    <p className="text-primary-red font-bold text-sm uppercase tracking-widest mb-4">From Our Blog</p>
+                    <h2 className="text-4xl md:text-5xl font-bold">Latest News & Insights</h2>
                 </div>
-            </SectionWrapper>
 
-            {/* Blog Carousel Section */}
-            {blogPosts.length > 0 && (
-                <SectionWrapper background="light">
-                    <div className="text-center mb-12">
-                        <p className="text-primary-red font-bold text-sm uppercase tracking-widest mb-4">From Our Blog</p>
-                        <h2 className="text-4xl md:text-5xl font-bold text-secondary-blue">Latest News & Insights</h2>
-                    </div>
-
-                    <div className="max-w-2xl mx-auto">
+                {blogPosts.length > 0 ? (
+                    <div className="max-w-2xl mx-auto relative z-10">
                         {/* Blog Card */}
-                        <div className="bg-white rounded-[2rem] shadow-sm hover:shadow-2xl transition-all duration-500 border border-gray-100 overflow-hidden">
+                        <div className="bg-white rounded-[2rem] shadow-2xl hover:shadow-[0_30px_60px_-15px_rgba(0,0,0,0.4)] transition-all duration-500 border border-white/20 overflow-hidden">
                             {/* Image */}
                             <div className="relative h-72 overflow-hidden bg-gray-50 flex items-center justify-center">
                                 <div 
@@ -386,7 +352,7 @@ const Home = () => {
                                     {blogPosts[blogIndex]?.title}
                                 </h3>
 
-                                {/* Meta Labels as bullet highlights */}
+                                {/* Meta Labels */}
                                 {blogPosts[blogIndex]?.labels && (
                                     <div className="flex flex-wrap gap-2 mb-6">
                                         {(typeof blogPosts[blogIndex].labels === 'string' 
@@ -418,7 +384,7 @@ const Home = () => {
                         <div className="flex justify-center items-center space-x-6 mt-8">
                             <button 
                                 onClick={() => setBlogIndex((prev) => (prev - 1 + blogPosts.length) % blogPosts.length)}
-                                className="p-3 min-w-[44px] min-h-[44px] rounded-full border-2 border-gray-200 text-secondary-blue hover:bg-secondary-blue hover:text-white transition-all flex items-center justify-center"
+                                className="p-3 min-w-[44px] min-h-[44px] rounded-full border-2 border-white/20 text-white hover:bg-white hover:text-secondary-blue transition-all flex items-center justify-center"
                                 aria-label="Previous post"
                             >
                                 <ChevronLeft className="w-5 h-5" />
@@ -429,7 +395,7 @@ const Home = () => {
                                     <button 
                                         key={i}
                                         onClick={() => setBlogIndex(i)}
-                                        className={`w-3 h-3 rounded-full transition-all ${blogIndex === i ? 'bg-primary-red w-8' : 'bg-gray-300'}`}
+                                        className={`w-3 h-3 rounded-full transition-all ${blogIndex === i ? 'bg-primary-red w-8' : 'bg-white/30'}`}
                                         aria-label={`Go to post ${i + 1}`}
                                     />
                                 ))}
@@ -437,15 +403,46 @@ const Home = () => {
 
                             <button 
                                 onClick={() => setBlogIndex((prev) => (prev + 1) % blogPosts.length)}
-                                className="p-3 min-w-[44px] min-h-[44px] rounded-full border-2 border-gray-200 text-secondary-blue hover:bg-secondary-blue hover:text-white transition-all flex items-center justify-center"
+                                className="p-3 min-w-[44px] min-h-[44px] rounded-full border-2 border-white/20 text-white hover:bg-white hover:text-secondary-blue transition-all flex items-center justify-center"
                                 aria-label="Next post"
                             >
                                 <ChevronRight className="w-5 h-5" />
                             </button>
                         </div>
                     </div>
-                </SectionWrapper>
-            )}
+                ) : (
+                    <div className="grid lg:grid-cols-2 gap-16 items-center relative z-10">
+                        <div>
+                            <h2 className="text-4xl md:text-5xl font-bold mb-8 leading-tight">Apply to Malta with <br />Full Support</h2>
+                            <p className="text-xl text-blue-100 mb-10 leading-relaxed italic border-l-4 border-primary-red pl-6">
+                                "Malta offers the most affordable European education with a 100% English-speaking environment. Perfect for Bangladeshi students seeking PR in the EU."
+                            </p>
+                            <ul className="space-y-4 mb-10">
+                                {[
+                                    "No IELTS required for specific programs",
+                                    "Work while studying authorized",
+                                    "Low cost of living compared to UK/USA",
+                                    "99% Visa success rate via Astoria"
+                                ].map((item, i) => (
+                                    <li key={i} className="flex items-center text-lg">
+                                        <CheckCircle className="text-primary-red mr-4 w-6 h-6 flex-shrink-0" />
+                                        {item}
+                                    </li>
+                                ))}
+                            </ul>
+                            <Button to="/contact" variant="primary" className="px-12">Claim Your Spot Now</Button>
+                        </div>
+                        <div className="relative">
+                            <div className="absolute inset-0 bg-primary-red/10 rounded-3xl -rotate-3 scale-105"></div>
+                            <img 
+                                src={maltaImage} 
+                                alt="Study Malta" 
+                                className="relative z-10 rounded-3xl shadow-2xl border-4 border-white/10"
+                            />
+                        </div>
+                    </div>
+                )}
+            </SectionWrapper>
 
             {/* Testimonials */}
             <SectionWrapper background="white">
