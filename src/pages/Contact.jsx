@@ -413,29 +413,17 @@ const Contact = () => {
                         <h2 className="font-poppins font-bold text-3xl mb-6 text-secondary-blue">
                             Visit Our Office
                         </h2>
-                        <div className="bg-light rounded-xl overflow-hidden h-[600px] flex items-center justify-center">
-                            <div className="text-center p-8">
-                                <MapPin className="w-16 h-16 text-primary-red mx-auto mb-4" />
-                                <h3 className="font-poppins font-semibold text-xl mb-2 text-secondary-blue">
-                                    Our Location
-                                </h3>
-                                <p className="text-gray-700 mb-4">
-                                    Airport Rd, Ahmednogor 6203
-                                </p>
-                                <p className="text-sm text-gray-600 mb-6">
-                                    Google Maps integration can be added here
-                                </p>
-                                <a
-                                    href="https://www.google.com/maps/search/?api=1&query=24.387602,88.607993"
-                                    target="_blank"
-                                    rel="noopener noreferrer"
-                                    className="inline-block"
-                                >
-                                    <Button variant="outline">
-                                        Open in Google Maps
-                                    </Button>
-                                </a>
-                            </div>
+                        <div className="bg-light rounded-xl overflow-hidden h-[600px] w-full relative">
+                            <iframe
+                                title="Astoria Study Abroad Location"
+                                src="https://maps.google.com/maps?q=Astoria%20Study%20Abroad,%20Rajshahi&t=&z=19&ie=UTF8&iwloc=&output=embed"
+                                width="100%"
+                                height="100%"
+                                style={{ border: 0 }}
+                                allowFullScreen=""
+                                loading="lazy"
+                                referrerPolicy="no-referrer-when-downgrade"
+                            ></iframe>
                         </div>
                     </div>
                 </div>
