@@ -20,22 +20,22 @@ export const BlogService = {
         }
     },
 
-    // Get single post by ID
-    getById: async (id) => {
+    // Get single post by Slug
+    getBySlug: async (slug) => {
         try {
             const { data, error } = await supabase
                 .from('blogs')
                 .select('*')
-                .eq('id', id)
+                .eq('slug', slug)
                 .single();
 
             if (error) {
-                console.error(`Error fetching blog post ${id}:`, error.message);
+                console.error(`Error fetching blog post ${slug}:`, error.message);
                 return null;
             }
             return data;
         } catch (err) {
-            console.error(`Unexpected error fetching blog post ${id}:`, err);
+            console.error(`Unexpected error fetching blog post ${slug}:`, err);
             return null;
         }
     },

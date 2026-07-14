@@ -44,7 +44,7 @@ const BlogCard = ({ post, index = 0 }) => {
             <div className="p-8 flex-grow flex flex-col">
                 <div className="mb-6 flex-grow">
                     <h3 className="text-2xl font-bold font-poppins text-secondary-blue mb-4 group-hover:text-primary-red transition-colors leading-tight line-clamp-2">
-                        <Link to={`/blogs/${post.id}`}>
+                        <Link to={`/blogs/${post.slug || post.id}`}>
                             {post.title}
                         </Link>
                     </h3>
@@ -54,7 +54,7 @@ const BlogCard = ({ post, index = 0 }) => {
                 </div>
 
                 <Link
-                    to={`/blogs/${post.id}`}
+                    to={`/blogs/${post.slug || post.id}`}
                     className="group/btn inline-flex items-center text-primary-red font-bold text-xs uppercase tracking-widest relative overflow-hidden"
                 >
                     <span className="relative z-10 transition-transform duration-300 group-hover/btn:translate-x-1 inline-block">
