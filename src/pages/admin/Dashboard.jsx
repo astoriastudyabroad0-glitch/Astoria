@@ -146,7 +146,7 @@ const Dashboard = () => {
             content: post.content || '',
             slug: post.slug || '',
             published_at: post.date || post.published_at || new Date().toISOString().split('T')[0],
-            labels: Array.isArray(post.meta_labels) ? post.meta_labels.join(', ') : (post.meta_labels || post.labels || '')
+            labels: post.labels || ''
         });
         setIsEditing(true);
     };
@@ -166,7 +166,7 @@ const Dashboard = () => {
             content: formData.content,
             slug: formData.slug,
             date: formData.published_at,
-            meta_labels: formData.labels.split(',').map(s => s.trim()).filter(Boolean)
+            labels: formData.labels
         };
 
         if (currentPost) {

@@ -355,10 +355,7 @@ const Home = () => {
                                 {/* Meta Labels */}
                                 {blogPosts[blogIndex]?.labels && (
                                     <div className="flex flex-wrap gap-2 mb-6">
-                                        {(typeof blogPosts[blogIndex].labels === 'string' 
-                                            ? blogPosts[blogIndex].labels.split(',') 
-                                            : (blogPosts[blogIndex].meta_labels || [])
-                                        ).map((label, i) => (
+                                        {blogPosts[blogIndex].labels.split(',').filter(Boolean).map((label, i) => (
                                             <span key={i} className="inline-flex items-center px-3 py-1 rounded-full bg-primary-red/10 text-primary-red text-xs font-bold">
                                                 {label.trim()}
                                             </span>

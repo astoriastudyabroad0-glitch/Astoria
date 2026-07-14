@@ -22,27 +22,38 @@ import {
     Outdent, Indent, Type as CaseIcon
 } from 'lucide-react';
 
-const FontSize = TextStyle.extend({
-  addAttributes() {
+import { Extension } from '@tiptap/core';
+
+const FontSize = Extension.create({
+  name: 'fontSize',
+  addOptions() {
     return {
-      ...this.parent?.(),
-      fontSize: {
-        default: null,
-        parseHTML: element => element.style.fontSize?.replace(/['"]+/g, ''),
-        renderHTML: attributes => {
-          if (!attributes.fontSize) {
-            return {};
-          }
-          return {
-            style: `font-size: ${attributes.fontSize}`,
-          };
+      types: ['textStyle'],
+    };
+  },
+  addGlobalAttributes() {
+    return [
+      {
+        types: this.options.types,
+        attributes: {
+          fontSize: {
+            default: null,
+            parseHTML: element => element.style.fontSize?.replace(/['"]+/g, ''),
+            renderHTML: attributes => {
+              if (!attributes.fontSize) {
+                return {};
+              }
+              return {
+                style: `font-size: ${attributes.fontSize}`,
+              };
+            },
+          },
         },
       },
-    };
+    ];
   },
   addCommands() {
     return {
-      ...this.parent?.(),
       setFontSize: fontSize => ({ chain }) => {
         return chain().setMark('textStyle', { fontSize }).run();
       },
@@ -69,6 +80,7 @@ const editorExtensions = [
             class: 'max-w-full h-auto mx-auto my-4',
         },
     }),
+    TextStyle,
     FontSize,
     Color,
     FontFamily,
@@ -181,7 +193,7 @@ const WordEditor = ({ content, onChange }) => {
 
                     <select 
                         className="h-[26px] w-[60px] border border-[#c8c8c8] rounded-[3px] bg-white text-[12px] px-1 outline-none"
-                        onChange={(e) => setFontSize(e.target.value)}
+                        onChange={(e) => editor.chain().focus().setFontSize(`${e.target.value}pt`).run()}
                         value={editor.getAttributes('textStyle').fontSize?.replace('pt', '') || '12'}
                     >
                         {fontSizes.map(s => <option key={s} value={s}>{s}</option>)}
