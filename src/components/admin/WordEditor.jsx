@@ -21,7 +21,6 @@ import {
     Subscript as SubscriptIcon, Superscript as SuperscriptIcon,
     Outdent, Indent, Type as CaseIcon
 } from 'lucide-react';
-import { TextStyle } from '@tiptap/extension-text-style';
 
 const FontSize = TextStyle.extend({
   addAttributes() {

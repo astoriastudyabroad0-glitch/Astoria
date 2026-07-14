@@ -2,7 +2,7 @@ import React, { useState, useEffect } from 'react';
 import { 
     GraduationCap, FileCheck, Plane, Home as HomeIcon, Users, 
     Award, Star, Globe, BookOpen, Shield, TrendingUp, 
-    ChevronRight, ChevronLeft, Quote, CheckCircle, Phone, X 
+    ChevronRight, ChevronLeft, Quote, CheckCircle, Phone, X, Calendar, ArrowRight 
 } from 'lucide-react';
 import { Link } from 'react-router-dom';
 import Button from '../components/Button';
@@ -11,6 +11,7 @@ import PromoCard from '../components/PromoCard';
 import SectionWrapper from '../components/SectionWrapper';
 import { ReviewService } from '../services/ReviewService';
 import { CountryService } from '../services/CountryService';
+import { BlogService } from '../services/BlogService';
 
 
 import heroImage from '../assets/hero.png';
@@ -53,24 +54,34 @@ const Home = () => {
     const [currentIndex, setCurrentIndex] = useState(0);
     const [isAnimating, setIsAnimating] = useState(false);
     const [showPopup, setShowPopup] = useState(false);
+    const [blogPosts, setBlogPosts] = useState([]);
+    const [blogIndex, setBlogIndex] = useState(0);
 
     useEffect(() => {
         document.title = "Astoria Study Abroad | IELTS & PTE Specialist Rajshahi";
-        const timer = setTimeout(() => {
-            setShowPopup(true);
-        }, 3000); // Show popup after 3 seconds
-        return () => clearTimeout(timer);
+        
+        // Only show popup once per session
+        const alreadyShown = sessionStorage.getItem('popupShown');
+        if (!alreadyShown) {
+            const timer = setTimeout(() => {
+                setShowPopup(true);
+                sessionStorage.setItem('popupShown', 'true');
+            }, 3000);
+            return () => clearTimeout(timer);
+        }
     }, []);
 
     useEffect(() => {
         const fetchData = async () => {
             try {
-                const [reviewsData, countriesData] = await Promise.all([
+                const [reviewsData, countriesData, blogsData] = await Promise.all([
                     ReviewService.getApproved(),
-                    CountryService.getAll()
+                    CountryService.getAll(),
+                    BlogService.getAll()
                 ]);
                 setTestimonials(reviewsData);
                 setCountries(countriesData.slice(0, 3));
+                setBlogPosts(blogsData.slice(0, 10));
             } catch (err) {
                 console.error('Error fetching home data:', err);
             }
@@ -113,10 +124,9 @@ const Home = () => {
     };
 
     const ConsultancyPopup = () => {
-        if (!showPopup) return null;
         return (
-            <div className="fixed inset-0 z-[100] flex items-center justify-center p-4 bg-secondary-blue/80 backdrop-blur-md animate-fade-in">
-                <div className="bg-white rounded-[2rem] shadow-2xl max-w-lg w-full overflow-hidden relative animate-fade-in-up">
+            <div className={`fixed inset-0 z-[100] flex items-center justify-center p-4 bg-secondary-blue/80 backdrop-blur-md transition-opacity duration-300 ${showPopup ? 'opacity-100' : 'opacity-0 pointer-events-none'}`}>
+                <div className={`bg-white rounded-[2rem] shadow-2xl max-w-lg w-full overflow-hidden relative transition-all duration-300 ${showPopup ? 'scale-100 opacity-100' : 'scale-95 opacity-0'}`}>
                     <button 
                         onClick={() => setShowPopup(false)}
                         className="absolute top-6 right-6 text-gray-400 hover:text-secondary-blue transition-colors z-10"
@@ -335,6 +345,107 @@ const Home = () => {
                     </div>
                 </div>
             </SectionWrapper>
+
+            {/* Blog Carousel Section */}
+            {blogPosts.length > 0 && (
+                <SectionWrapper background="light">
+                    <div className="text-center mb-12">
+                        <p className="text-primary-red font-bold text-sm uppercase tracking-widest mb-4">From Our Blog</p>
+                        <h2 className="text-4xl md:text-5xl font-bold text-secondary-blue">Latest News & Insights</h2>
+                    </div>
+
+                    <div className="max-w-2xl mx-auto">
+                        {/* Blog Card */}
+                        <div className="bg-white rounded-[2rem] shadow-sm hover:shadow-2xl transition-all duration-500 border border-gray-100 overflow-hidden">
+                            {/* Image */}
+                            <div className="relative h-72 overflow-hidden bg-gray-50 flex items-center justify-center">
+                                <div 
+                                    className="absolute inset-0 opacity-20 blur-xl scale-110 z-0"
+                                    style={{ 
+                                        backgroundImage: `url(${blogPosts[blogIndex]?.image || ''})`,
+                                        backgroundSize: 'cover',
+                                        backgroundPosition: 'center'
+                                    }}
+                                ></div>
+                                <img
+                                    src={blogPosts[blogIndex]?.image || 'https://images.unsplash.com/photo-1523050854058-8df90110c9f1?w=800&auto=format&fit=crop&q=60'}
+                                    alt={blogPosts[blogIndex]?.title}
+                                    className="relative z-10 w-full h-full object-contain"
+                                />
+                                <div className="absolute top-6 left-6 z-20">
+                                    <div className="bg-white/95 backdrop-blur-md px-4 py-2 rounded-2xl text-[10px] font-bold text-secondary-blue uppercase tracking-widest shadow-lg flex items-center border border-white/50">
+                                        <Calendar className="w-3 h-3 mr-2 text-primary-red" />
+                                        {blogPosts[blogIndex]?.date}
+                                    </div>
+                                </div>
+                            </div>
+
+                            {/* Content */}
+                            <div className="p-8">
+                                <h3 className="text-2xl font-bold font-poppins text-secondary-blue mb-4 leading-tight line-clamp-2">
+                                    {blogPosts[blogIndex]?.title}
+                                </h3>
+
+                                {/* Meta Labels as bullet highlights */}
+                                {blogPosts[blogIndex]?.labels && (
+                                    <div className="flex flex-wrap gap-2 mb-6">
+                                        {(typeof blogPosts[blogIndex].labels === 'string' 
+                                            ? blogPosts[blogIndex].labels.split(',') 
+                                            : (blogPosts[blogIndex].meta_labels || [])
+                                        ).map((label, i) => (
+                                            <span key={i} className="inline-flex items-center px-3 py-1 rounded-full bg-primary-red/10 text-primary-red text-xs font-bold">
+                                                {label.trim()}
+                                            </span>
+                                        ))}
+                                    </div>
+                                )}
+
+                                <Link
+                                    to={`/blogs/${blogPosts[blogIndex]?.slug || blogPosts[blogIndex]?.id}`}
+                                    className="group/btn inline-flex items-center text-primary-red font-bold text-xs uppercase tracking-widest"
+                                >
+                                    <span className="transition-transform duration-300 group-hover/btn:translate-x-1 inline-block">
+                                        Read Full Article
+                                    </span>
+                                    <div className="w-8 h-8 rounded-full bg-primary-red/10 flex items-center justify-center ml-4 group-hover/btn:bg-primary-red group-hover/btn:text-white transition-all duration-300">
+                                        <ArrowRight className="w-4 h-4" />
+                                    </div>
+                                </Link>
+                            </div>
+                        </div>
+
+                        {/* Navigation Controls */}
+                        <div className="flex justify-center items-center space-x-6 mt-8">
+                            <button 
+                                onClick={() => setBlogIndex((prev) => (prev - 1 + blogPosts.length) % blogPosts.length)}
+                                className="p-3 min-w-[44px] min-h-[44px] rounded-full border-2 border-gray-200 text-secondary-blue hover:bg-secondary-blue hover:text-white transition-all flex items-center justify-center"
+                                aria-label="Previous post"
+                            >
+                                <ChevronLeft className="w-5 h-5" />
+                            </button>
+
+                            <div className="flex space-x-2">
+                                {blogPosts.map((_, i) => (
+                                    <button 
+                                        key={i}
+                                        onClick={() => setBlogIndex(i)}
+                                        className={`w-3 h-3 rounded-full transition-all ${blogIndex === i ? 'bg-primary-red w-8' : 'bg-gray-300'}`}
+                                        aria-label={`Go to post ${i + 1}`}
+                                    />
+                                ))}
+                            </div>
+
+                            <button 
+                                onClick={() => setBlogIndex((prev) => (prev + 1) % blogPosts.length)}
+                                className="p-3 min-w-[44px] min-h-[44px] rounded-full border-2 border-gray-200 text-secondary-blue hover:bg-secondary-blue hover:text-white transition-all flex items-center justify-center"
+                                aria-label="Next post"
+                            >
+                                <ChevronRight className="w-5 h-5" />
+                            </button>
+                        </div>
+                    </div>
+                </SectionWrapper>
+            )}
 
             {/* Testimonials */}
             <SectionWrapper background="white">
