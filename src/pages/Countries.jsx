@@ -47,6 +47,26 @@ const Countries = () => {
         },
     ];
 
+    const getFlagUrl = (emoji) => {
+        if (!emoji) return null;
+        try {
+            if (emoji.length === 2 && /^[a-zA-Z]{2}$/.test(emoji)) {
+                return `https://flagcdn.com/w80/${emoji.toLowerCase()}.png`;
+            }
+            const points = Array.from(emoji).map(c => c.codePointAt(0));
+            if (points.length >= 2) {
+                const code1 = points[0];
+                const code2 = points[1];
+                if (code1 >= 0x1F1E6 && code1 <= 0x1F1FF && code2 >= 0x1F1E6 && code2 <= 0x1F1FF) {
+                    const char1 = String.fromCharCode(code1 - 0x1F1E6 + 97);
+                    const char2 = String.fromCharCode(code2 - 0x1F1E6 + 97);
+                    return `https://flagcdn.com/w80/${char1}${char2}.png`;
+                }
+            }
+        } catch(e) {}
+        return null;
+    };
+
     return (
         <div className="pt-20">
             {/* Hero Section */}
@@ -70,13 +90,19 @@ const Countries = () => {
                             <p className="mt-4 text-gray-500">Loading destinations...</p>
                         </div>
                     ) : (
-                        countries.map((country, index) => (
+                        countries.map((country, index) => {
+                            const flagUrl = getFlagUrl(country.flag);
+                            return (
                             <div key={country.id || index} className="bg-light rounded-2xl p-8 md:p-12">
                                 <div className="grid md:grid-cols-3 gap-8">
                                     {/* Country Header */}
                                     <div className="md:col-span-3">
                                         <div className="flex items-center mb-4">
-                                            <span className="text-6xl mr-4">{country.flag}</span>
+                                            {flagUrl ? (
+                                                <img src={flagUrl} alt={`${country.name} flag`} className="w-16 h-12 object-cover shadow-sm mr-4 border border-gray-200" />
+                                            ) : (
+                                                <span className="text-6xl mr-4 font-emoji">{country.flag}</span>
+                                            )}
                                             <div>
                                                 <h2 className="font-poppins font-bold text-3xl md:text-4xl text-secondary-blue">
                                                     {country.name}
@@ -133,7 +159,8 @@ const Countries = () => {
                                     </div>
                                 </div>
                             </div>
-                        ))
+                            );
+                        })
                     )}
                     {!loading && countries.length === 0 && (
                         <p className="text-center text-gray-500 py-20">No study destinations found.</p>

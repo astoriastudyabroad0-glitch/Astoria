@@ -5,6 +5,7 @@ import {
     ChevronRight, ChevronLeft, Quote, CheckCircle, Phone, X, Calendar, ArrowRight 
 } from 'lucide-react';
 import { Link } from 'react-router-dom';
+import { Helmet } from 'react-helmet-async';
 import Button from '../components/Button';
 import Card from '../components/Card';
 import PromoCard from '../components/PromoCard';
@@ -12,7 +13,6 @@ import SectionWrapper from '../components/SectionWrapper';
 import { ReviewService } from '../services/ReviewService';
 import { CountryService } from '../services/CountryService';
 import { BlogService } from '../services/BlogService';
-
 
 import heroImage from '../assets/hero.png';
 import maltaImage from '../assets/study-malta.png';
@@ -160,7 +160,10 @@ const Home = () => {
 
     return (
         <div className="overflow-x-hidden">
-            <ConsultancyPopup />
+            <Helmet>
+                <title>Astoria Study Abroad | Best Consultancy in Rajshahi | Study in Australia, Canada, UK, Malta</title>
+                <meta name="description" content="Looking for the best consultancy in Rajshahi? Astoria Study Abroad is your top agent for going abroad, offering guidance for study in Malta, Australia, New Zealand, Canada, and the UK. Get requirements for study abroad, PTE, GRE, and IELTS coaching or apply with no IELTS." />
+            </Helmet>
             {/* Hero Section - Full Branding Focused */}
             <section className="relative pt-24 pb-20 bg-white overflow-hidden">
                 {/* Subtle Background Textures */}
@@ -172,7 +175,7 @@ const Home = () => {
                         {/* Status Badge */}
                         <div className="inline-flex items-center px-5 py-2.5 rounded-full bg-white border border-gray-100 text-secondary-blue text-xs font-bold mb-10 shadow-xl shadow-blue-900/5 animate-fade-in-up">
                             <span className="w-2 h-2 rounded-full bg-primary-red mr-3 animate-pulse"></span>
-                            Official 2026 Admissions Gateway
+                            Official 2027 Admissions Gateway
                         </div>
 
                         {/* Massive Branding Image */}
@@ -292,7 +295,7 @@ const Home = () => {
                             
                             <div className="absolute bottom-0 left-0 right-0 p-8">
                                 <span className="inline-block px-3 py-1 bg-primary-red text-white text-xs font-bold rounded-full mb-4">
-                                    Intake Open 2026
+                                    Intake Open 2027
                                 </span>
                                 <h3 className="text-3xl font-bold text-white mb-4">{country.name}</h3>
                                 <p className="text-gray-300 text-sm mb-6 line-clamp-2">{country.description}</p>
@@ -320,65 +323,88 @@ const Home = () => {
                 </div>
 
                 {blogPosts.length > 0 ? (
-                    <div className="max-w-2xl mx-auto relative z-10">
-                        {/* Blog Card */}
-                        <div className="bg-white rounded-[2rem] shadow-2xl hover:shadow-[0_30px_60px_-15px_rgba(0,0,0,0.4)] transition-all duration-500 border border-white/20 overflow-hidden">
-                            {/* Image */}
-                            <div className="relative h-72 overflow-hidden bg-gray-50 flex items-center justify-center">
-                                <div 
-                                    className="absolute inset-0 opacity-20 blur-xl scale-110 z-0"
-                                    style={{ 
-                                        backgroundImage: `url(${blogPosts[blogIndex]?.image || ''})`,
-                                        backgroundSize: 'cover',
-                                        backgroundPosition: 'center'
-                                    }}
-                                ></div>
-                                <img
-                                    src={blogPosts[blogIndex]?.image || 'https://images.unsplash.com/photo-1523050854058-8df90110c9f1?w=800&auto=format&fit=crop&q=60'}
-                                    alt={blogPosts[blogIndex]?.title}
-                                    className="relative z-10 w-full h-full object-contain"
-                                />
-                                <div className="absolute top-6 left-6 z-20">
-                                    <div className="bg-white/95 backdrop-blur-md px-4 py-2 rounded-2xl text-[10px] font-bold text-secondary-blue uppercase tracking-widest shadow-lg flex items-center border border-white/50">
-                                        <Calendar className="w-3 h-3 mr-2 text-primary-red" />
-                                        {blogPosts[blogIndex]?.date}
-                                    </div>
-                                </div>
-                            </div>
+                    <div className="container-custom relative z-10">
+                        {/* Blog Cards Grid */}
+                        <div className="grid md:grid-cols-2 lg:grid-cols-3 gap-8">
+                            {(() => {
+                                const visibleBlogs = [];
+                                const count = Math.min(3, blogPosts.length);
+                                for (let i = 0; i < count; i++) {
+                                    visibleBlogs.push(blogPosts[(blogIndex + i) % blogPosts.length]);
+                                }
+                                return visibleBlogs.map((post, index) => (
+                                    <div key={index} className="bg-white rounded-[2rem] shadow-xl hover:shadow-2xl transition-all duration-500 border border-white/20 overflow-hidden flex flex-col">
+                                        {/* Image */}
+                                        <div className="relative h-60 overflow-hidden bg-gray-50 flex items-center justify-center">
+                                            <div 
+                                                className="absolute inset-0 opacity-20 blur-xl scale-110 z-0"
+                                                style={{ 
+                                                    backgroundImage: `url(${post?.image || ''})`,
+                                                    backgroundSize: 'cover',
+                                                    backgroundPosition: 'center'
+                                                }}
+                                            ></div>
+                                            <img
+                                                src={post?.image || 'https://images.unsplash.com/photo-1523050854058-8df90110c9f1?w=800&auto=format&fit=crop&q=60'}
+                                                alt={post?.title}
+                                                className="relative z-10 w-full h-full object-contain"
+                                            />
+                                            <div className="absolute top-4 left-4 z-20">
+                                                <div className="bg-white/95 backdrop-blur-md px-3 py-1.5 rounded-xl text-[10px] font-bold text-secondary-blue uppercase tracking-widest shadow-lg flex items-center border border-white/50">
+                                                    <Calendar className="w-3 h-3 mr-2 text-primary-red" />
+                                                    {post?.date}
+                                                </div>
+                                            </div>
+                                        </div>
 
-                            {/* Content */}
-                            <div className="p-8">
-                                <h3 className="text-2xl font-bold font-poppins text-secondary-blue mb-4 leading-tight line-clamp-2">
-                                    {blogPosts[blogIndex]?.title}
-                                </h3>
+                                        {/* Content */}
+                                        <div className="p-6 flex-grow flex flex-col">
+                                            <h3 className="text-xl font-bold font-poppins text-secondary-blue mb-4 leading-tight line-clamp-2">
+                                                {post?.title}
+                                            </h3>
 
-                                {/* Meta Labels */}
-                                {blogPosts[blogIndex]?.labels && (
-                                    <div className="flex flex-wrap gap-2 mb-6">
-                                        {blogPosts[blogIndex].labels.split(',').filter(Boolean).map((label, i) => (
-                                            <span key={i} className="inline-flex items-center px-3 py-1 rounded-full bg-primary-red/10 text-primary-red text-xs font-bold">
-                                                {label.trim()}
-                                            </span>
-                                        ))}
-                                    </div>
-                                )}
+                                            {/* Meta Labels (Limit to 3) */}
+                                            {post?.labels && (
+                                                <div className="flex flex-wrap gap-2 mb-6 flex-grow">
+                                                    {post.labels.split(',').filter(Boolean).slice(0, 3).map((label, i) => {
+                                                        const cleanLabel = label.trim().replace(/^#/, ''); // Remove # if they pasted hashtags
+                                                        // Prevent insanely long labels
+                                                        const displayLabel = cleanLabel.length > 25 ? cleanLabel.substring(0, 25) + '...' : cleanLabel;
+                                                        return (
+                                                            <span key={i} className="inline-flex items-center px-3 py-1 rounded-full bg-primary-red/10 text-primary-red text-[10px] font-bold">
+                                                                {displayLabel}
+                                                            </span>
+                                                        );
+                                                    })}
+                                                    {post.labels.split(',').filter(Boolean).length > 3 && (
+                                                        <span className="inline-flex items-center px-3 py-1 rounded-full bg-gray-100 text-gray-500 text-[10px] font-bold">
+                                                            +{post.labels.split(',').filter(Boolean).length - 3}
+                                                        </span>
+                                                    )}
+                                                </div>
+                                            )}
 
-                                <Link
-                                    to={`/blogs/${blogPosts[blogIndex]?.slug || blogPosts[blogIndex]?.id}`}
-                                    className="group/btn inline-flex items-center text-primary-red font-bold text-xs uppercase tracking-widest"
-                                >
-                                    <span className="transition-transform duration-300 group-hover/btn:translate-x-1 inline-block">
-                                        Read Full Article
-                                    </span>
-                                    <div className="w-8 h-8 rounded-full bg-primary-red/10 flex items-center justify-center ml-4 group-hover/btn:bg-primary-red group-hover/btn:text-white transition-all duration-300">
-                                        <ArrowRight className="w-4 h-4" />
+                                            <div className="mt-auto">
+                                                <Link
+                                                    to={`/blogs/${post?.slug || post?.id}`}
+                                                    className="group/btn inline-flex items-center text-primary-red font-bold text-xs uppercase tracking-widest"
+                                                >
+                                                    <span className="transition-transform duration-300 group-hover/btn:translate-x-1 inline-block">
+                                                        Read Full Article
+                                                    </span>
+                                                    <div className="w-8 h-8 rounded-full bg-primary-red/10 flex items-center justify-center ml-4 group-hover/btn:bg-primary-red group-hover/btn:text-white transition-all duration-300">
+                                                        <ArrowRight className="w-4 h-4" />
+                                                    </div>
+                                                </Link>
+                                            </div>
+                                        </div>
                                     </div>
-                                </Link>
-                            </div>
+                                ));
+                            })()}
                         </div>
-
                         {/* Navigation Controls */}
-                        <div className="flex justify-center items-center space-x-6 mt-8">
+                        {blogPosts.length > 3 && (
+                            <div className="flex justify-center items-center space-x-6 mt-12">
                             <button 
                                 onClick={() => setBlogIndex((prev) => (prev - 1 + blogPosts.length) % blogPosts.length)}
                                 className="p-3 min-w-[44px] min-h-[44px] rounded-full border-2 border-white/20 text-white hover:bg-white hover:text-secondary-blue transition-all flex items-center justify-center"
@@ -406,6 +432,7 @@ const Home = () => {
                                 <ChevronRight className="w-5 h-5" />
                             </button>
                         </div>
+                        )}
                     </div>
                 ) : (
                     <div className="grid lg:grid-cols-2 gap-16 items-center relative z-10">
@@ -514,6 +541,26 @@ const Home = () => {
                     </div>
                 </div>
             </SectionWrapper>
+
+            {/* SEO Keyword & Expertise Section */}
+            <section className="bg-gray-50 py-16 border-t border-gray-200">
+                <div className="container-custom">
+                    <div className="max-w-4xl mx-auto text-center">
+                        <h3 className="text-2xl font-bold text-secondary-blue mb-6">Why We Are The Best Consultancy in Rajshahi</h3>
+                        <p className="text-gray-600 mb-6 text-sm leading-relaxed">
+                            Looking for a reliable <strong className="text-secondary-blue">agency in Rajshahi</strong>? Whether you are a student exploring <strong className="text-secondary-blue">requirements for study abroad</strong>, seeking a top-tier <strong className="text-secondary-blue">ajent rajshahi</strong>, or planning on <strong className="text-secondary-blue">going abroad</strong> for a <strong className="text-secondary-blue">master abroad</strong> or a prestigious <strong className="text-secondary-blue">university abroad</strong>, Astoria Study Abroad is here for you. We are widely recognized as the <strong className="text-secondary-blue">best consultancy</strong> and premier <strong className="text-secondary-blue">consultancy rajshahi</strong> offers.
+                        </p>
+                        <p className="text-gray-600 mb-8 text-sm leading-relaxed">
+                            Our expertise spans guiding students to <strong className="text-secondary-blue">study in Malta</strong>, <strong className="text-secondary-blue">study in Australia</strong>, <strong className="text-secondary-blue">study in Newzealand</strong>, <strong className="text-secondary-blue">study in Canada</strong>, and <strong className="text-secondary-blue">study in UK</strong>. We provide comprehensive coaching for <strong className="text-secondary-blue">IELTS</strong>, <strong className="text-secondary-blue">PTE</strong>, and <strong className="text-secondary-blue">GRE</strong>. Worried about language tests? We have exclusive pathways with <strong className="text-secondary-blue">no IELTS</strong> required. From securing your offer letter to planning your pathway to <strong className="text-secondary-blue">PR</strong>, your trusted <strong className="text-secondary-blue">Rajshahi agent</strong> (and your favorite <strong className="text-secondary-blue">beshi consultancy</strong>) ensures your international dreams come true.
+                        </p>
+                        <div className="flex flex-wrap justify-center gap-3">
+                            {['#BangladeshiStudents', '#StudyInMalaysia', '#studentlife', '#Rajshahi', '#students', '#consultancy', '#StudyAbroad', '#agency', '#StudentAccommodation'].map(tag => (
+                                <span key={tag} className="text-xs font-bold text-primary-red bg-red-50 px-3 py-1.5 rounded-full">{tag}</span>
+                            ))}
+                        </div>
+                    </div>
+                </div>
+            </section>
 
             {/* Floating Consultation Button */}
             <div className="fixed bottom-8 right-8 z-50">

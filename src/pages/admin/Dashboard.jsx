@@ -11,6 +11,7 @@ import { CountryService } from '../../services/CountryService';
 import { supabase } from '../../lib/supabaseClient';
 import Button from '../../components/Button';
 import WordEditor from '../../components/admin/WordEditor';
+import ConfirmModal from '../../components/admin/ConfirmModal';
 
 const Dashboard = () => {
     const navigate = useNavigate();
@@ -37,6 +38,8 @@ const Dashboard = () => {
     const [viewingMessage, setViewingMessage] = useState(null);
     const [loading, setLoading] = useState(true);
 
+    const [confirmModal, setConfirmModal] = useState({ isOpen: false, title: '', message: '', onConfirm: null, isDanger: true });
+
     const initialFormState = {
         title: '',
         subtitle: '',
@@ -49,6 +52,9 @@ const Dashboard = () => {
     };
     const [formData, setFormData] = useState(initialFormState);
     const [uploadingImage, setUploadingImage] = useState(false);
+    
+    const [isMediaSelectorOpen, setIsMediaSelectorOpen] = useState(false);
+    const [contentImages, setContentImages] = useState([]);
 
     // Initial Form State
     const countryInitialState = {
@@ -63,6 +69,23 @@ const Dashboard = () => {
     const [countryForm, setCountryForm] = useState(countryInitialState);
     const [activeSettingTab, setActiveSettingTab] = useState('labels'); // 'labels', 'permalink', 'location', 'published'
     const [slugModified, setSlugModified] = useState(false);
+    const [currentLabel, setCurrentLabel] = useState('');
+
+    const handleAddLabel = (e) => {
+        e.preventDefault();
+        if (currentLabel.trim()) {
+            const currentLabels = formData.labels ? formData.labels.split(',').map(l => l.trim()).filter(Boolean) : [];
+            if (!currentLabels.includes(currentLabel.trim())) {
+                setFormData({ ...formData, labels: [...currentLabels, currentLabel.trim()].join(', ') });
+            }
+            setCurrentLabel('');
+        }
+    };
+
+    const handleRemoveLabel = (labelToRemove) => {
+        const currentLabels = formData.labels ? formData.labels.split(',').map(l => l.trim()).filter(Boolean) : [];
+        setFormData({ ...formData, labels: currentLabels.filter(l => l !== labelToRemove).join(', ') });
+    };
 
     const handleImageUpload = async (e) => {
         const file = e.target.files[0];
@@ -80,15 +103,35 @@ const Dashboard = () => {
         }
     };
 
-    // Auto-generate slug from title
+    // Auto-generate slug from title with translation
     useEffect(() => {
-        if (!slugModified && formData.title) {
-            const generatedSlug = formData.title
+        if (slugModified || !formData.title) return;
+
+        const timeoutId = setTimeout(async () => {
+            let textToSlugify = formData.title;
+            
+            // If the title contains non-ASCII characters (e.g. Bengali)
+            if (/[^\x00-\x7F]/.test(formData.title)) {
+                try {
+                    const res = await fetch(`https://api.mymemory.translated.net/get?q=${encodeURIComponent(formData.title)}&langpair=bn|en`);
+                    const data = await res.json();
+                    if (data?.responseData?.translatedText) {
+                        textToSlugify = data.responseData.translatedText;
+                    }
+                } catch (e) {
+                    console.error("Translation for slug failed", e);
+                }
+            }
+
+            const generatedSlug = textToSlugify
                 .toLowerCase()
                 .replace(/[^a-z0-9]+/g, '-')
                 .replace(/(^-|-$)/g, '');
+            
             setFormData(prev => ({ ...prev, slug: generatedSlug }));
-        }
+        }, 1000); // 1-second debounce to avoid spamming the translation API
+
+        return () => clearTimeout(timeoutId);
     }, [formData.title, slugModified]);
 
 
@@ -129,11 +172,17 @@ const Dashboard = () => {
     };
 
     // Blog Actions
-    const handleDeletePost = async (id) => {
-        if (window.confirm('Are you sure you want to delete this post?')) {
-            await BlogService.delete(id);
-            loadData();
-        }
+    const handleDeletePost = (id) => {
+        setConfirmModal({
+            isOpen: true,
+            title: 'Delete Blog Post',
+            message: 'Are you sure you want to delete this post? This action cannot be undone.',
+            isDanger: true,
+            onConfirm: async () => {
+                await BlogService.delete(id);
+                loadData();
+            }
+        });
     };
 
     const startEdit = (post) => {
@@ -179,12 +228,18 @@ const Dashboard = () => {
     };
 
     // Message Actions
-    const handleDeleteMessage = async (id) => {
-        if (window.confirm('Are you sure you want to delete this message?')) {
-            await MessageService.delete(id);
-            setViewingMessage(null);
-            loadData();
-        }
+    const handleDeleteMessage = (id) => {
+        setConfirmModal({
+            isOpen: true,
+            title: 'Delete Message',
+            message: 'Are you sure you want to delete this message? This action cannot be undone.',
+            isDanger: true,
+            onConfirm: async () => {
+                await MessageService.delete(id);
+                setViewingMessage(null);
+                loadData();
+            }
+        });
     };
 
     const handleMarkAsRead = async (id) => {
@@ -208,11 +263,17 @@ const Dashboard = () => {
     };
 
     // Country Actions
-    const handleDeleteCountry = async (id) => {
-        if (window.confirm('Are You sure you want to delete this study destination?')) {
-            await CountryService.delete(id);
-            loadData();
-        }
+    const handleDeleteCountry = (id) => {
+        setConfirmModal({
+            isOpen: true,
+            title: 'Delete Study Destination',
+            message: 'Are you sure you want to delete this study destination? This action cannot be undone.',
+            isDanger: true,
+            onConfirm: async () => {
+                await CountryService.delete(id);
+                loadData();
+            }
+        });
     };
 
     const startEditCountry = (country) => {
@@ -259,11 +320,17 @@ const Dashboard = () => {
         loadData();
     };
 
-    const handleDeleteReview = async (id) => {
-        if (window.confirm('Are you sure you want to delete this review?')) {
-            await ReviewService.delete(id);
-            loadData();
-        }
+    const handleDeleteReview = (id) => {
+        setConfirmModal({
+            isOpen: true,
+            title: 'Delete Review',
+            message: 'Are you sure you want to delete this review?',
+            isDanger: true,
+            onConfirm: async () => {
+                await ReviewService.delete(id);
+                loadData();
+            }
+        });
     };
 
 
@@ -334,6 +401,23 @@ const Dashboard = () => {
                                                 <input type="file" className="hidden" accept="image/*" onChange={handleImageUpload} />
                                             </label>
                                         </div>
+                                        <button 
+                                            onClick={(e) => {
+                                                e.preventDefault();
+                                                const parser = new DOMParser();
+                                                const doc = parser.parseFromString(formData.content, 'text/html');
+                                                const imgs = doc.querySelectorAll('img');
+                                                const validSrcs = Array.from(imgs)
+                                                    .map(img => img.src)
+                                                    .filter(src => src && !src.includes('fbcdn.net/emoji') && !src.includes('emoji.php')); 
+                                                setContentImages([...new Set(validSrcs)]); // Unique images
+                                                setIsMediaSelectorOpen(true);
+                                            }}
+                                            className="text-xs font-bold text-secondary-blue hover:text-primary-red transition-colors flex items-center justify-center w-full py-2 bg-blue-50 hover:bg-red-50 rounded-lg"
+                                        >
+                                            <ImageIcon className="w-4 h-4 mr-2" />
+                                            Choose from Content
+                                        </button>
                                     </div>
                                 </div>
                                 <div className="space-y-6">
@@ -367,13 +451,44 @@ const Dashboard = () => {
                                         </div>
                                         <div>
                                             <label className="block text-xs font-bold text-gray-400 uppercase tracking-widest mb-3">Meta Labels</label>
-                                            <input
-                                                type="text"
-                                                value={formData.labels}
-                                                onChange={(e) => setFormData({ ...formData, labels: e.target.value })}
-                                                placeholder="e.g., Canada, Study Abroad"
-                                                className="w-full bg-gray-50 border border-gray-100 px-4 py-3 rounded-xl text-sm outline-none focus:ring-2 focus:ring-primary-red"
-                                            />
+                                            <div className="bg-gray-50 border border-gray-100 p-2 rounded-xl focus-within:ring-2 focus-within:ring-primary-red transition-all">
+                                                <div className="flex flex-wrap gap-2 mb-2">
+                                                    {formData.labels && formData.labels.split(',').filter(Boolean).map((label, i) => (
+                                                        <span key={i} className="inline-flex items-center px-3 py-1 rounded-full bg-white border border-gray-200 text-secondary-blue text-xs font-bold shadow-sm group">
+                                                            {label.trim()}
+                                                            <button 
+                                                                type="button" 
+                                                                onClick={() => handleRemoveLabel(label.trim())}
+                                                                className="ml-2 text-gray-400 hover:text-primary-red focus:outline-none"
+                                                            >
+                                                                <X className="w-3 h-3" />
+                                                            </button>
+                                                        </span>
+                                                    ))}
+                                                </div>
+                                                <div className="flex items-center mt-1">
+                                                    <input
+                                                        type="text"
+                                                        value={currentLabel}
+                                                        onChange={(e) => setCurrentLabel(e.target.value)}
+                                                        onKeyDown={(e) => {
+                                                            if (e.key === 'Enter') {
+                                                                e.preventDefault();
+                                                                handleAddLabel(e);
+                                                            }
+                                                        }}
+                                                        placeholder="Add label..."
+                                                        className="flex-grow bg-transparent text-sm outline-none px-2"
+                                                    />
+                                                    <button 
+                                                        type="button"
+                                                        onClick={handleAddLabel}
+                                                        className="p-1.5 rounded-lg bg-primary-red text-white hover:bg-red-600 transition-colors shadow-sm focus:outline-none"
+                                                    >
+                                                        <Plus className="w-4 h-4" />
+                                                    </button>
+                                                </div>
+                                            </div>
                                         </div>
                                     </div>
                                 </div>
@@ -386,6 +501,56 @@ const Dashboard = () => {
                         />
                     </div>
                 </div>
+
+                {/* Media Selector Modal */}
+                {isMediaSelectorOpen && (
+                    <div className="fixed inset-0 bg-black/60 backdrop-blur-sm z-[110] flex items-center justify-center p-4">
+                        <div className="bg-white rounded-3xl w-full max-w-2xl max-h-[80vh] overflow-hidden flex flex-col shadow-2xl">
+                            <div className="p-6 border-b border-gray-100 flex justify-between items-center bg-gray-50/50">
+                                <h3 className="text-xl font-bold text-gray-800 flex items-center">
+                                    <ImageIcon className="w-5 h-5 mr-3 text-secondary-blue" />
+                                    Select Cover Image
+                                </h3>
+                                <button onClick={() => setIsMediaSelectorOpen(false)} className="p-2 hover:bg-gray-200 rounded-full transition-colors text-gray-500">
+                                    <X className="w-5 h-5" />
+                                </button>
+                            </div>
+                            <div className="p-6 overflow-y-auto bg-gray-50 flex-grow">
+                                {contentImages.length > 0 ? (
+                                    <div className="grid grid-cols-2 md:grid-cols-3 gap-4">
+                                        {contentImages.map((src, index) => (
+                                            <div 
+                                                key={index}
+                                                onClick={() => {
+                                                    setFormData({ ...formData, image: src });
+                                                    setIsMediaSelectorOpen(false);
+                                                }}
+                                                className={`cursor-pointer rounded-xl overflow-hidden border-4 transition-all aspect-video relative group ${formData.image === src ? 'border-primary-red shadow-lg scale-[1.02]' : 'border-transparent hover:border-gray-300 shadow-sm'}`}
+                                            >
+                                                <img src={src} alt="Content" className="w-full h-full object-cover" />
+                                                <div className="absolute inset-0 bg-black/20 opacity-0 group-hover:opacity-100 transition-opacity flex items-center justify-center">
+                                                    <span className="bg-white/90 text-xs font-bold px-3 py-1.5 rounded-lg shadow-sm">Use as Cover</span>
+                                                </div>
+                                            </div>
+                                        ))}
+                                    </div>
+                                ) : (
+                                    <div className="text-center py-12 px-6">
+                                        <div className="w-20 h-20 bg-gray-100 rounded-full flex items-center justify-center mx-auto mb-6">
+                                            <ImageIcon className="w-10 h-10 text-gray-300" />
+                                        </div>
+                                        <h4 className="text-lg font-bold text-gray-800 mb-3">No images found</h4>
+                                        <p className="text-gray-500 text-sm max-w-md mx-auto leading-relaxed">
+                                            There are no standard images in the blog content. 
+                                            <br/><br/>
+                                            <strong className="text-gray-700">Note on Videos:</strong> Due to security restrictions (CORS), thumbnails from embedded Facebook videos cannot be extracted automatically. You will need to upload a cover image manually.
+                                        </p>
+                                    </div>
+                                )}
+                            </div>
+                        </div>
+                    </div>
+                )}
             </div>
         );
     }
@@ -500,18 +665,18 @@ const Dashboard = () => {
                     </div>
 
                     {activeTab === 'countries' && (
-                        <Button onClick={startCreateCountry} variant="primary" className="shadow-lg">
+                        <button onClick={startCreateCountry} className="flex items-center px-6 py-2.5 bg-gradient-to-r from-blue-600 to-indigo-600 text-white font-bold rounded-xl shadow-lg shadow-blue-500/30 hover:shadow-blue-500/50 hover:-translate-y-0.5 transition-all">
                             <Plus className="w-5 h-5 mr-2" />
                             Add Country
-                        </Button>
+                        </button>
                     )}
 
 
                     {activeTab === 'blogs' && (
-                        <Button onClick={startCreate} variant="primary" className="shadow-lg">
+                        <button onClick={startCreate} className="flex items-center px-6 py-2.5 bg-gradient-to-r from-red-600 to-rose-600 text-white font-bold rounded-xl shadow-lg shadow-red-500/30 hover:shadow-red-500/50 hover:-translate-y-0.5 transition-all">
                             <Plus className="w-5 h-5 mr-2" />
                             New Blog Post
-                        </Button>
+                        </button>
                     )}
                 </header>
 
@@ -951,7 +1116,7 @@ const Dashboard = () => {
                                             value={countryForm.flag}
                                             onChange={(e) => setCountryForm({ ...countryForm, flag: e.target.value })}
                                             className="w-full px-4 py-3 rounded-xl border border-gray-300 focus:outline-none focus:ring-2 focus:ring-secondary-blue font-emoji text-2xl"
-                                            placeholder="🇨🇦"
+                                            placeholder="🇹🇷"
                                             required
                                         />
                                     </div>
@@ -1032,6 +1197,10 @@ const Dashboard = () => {
                 </div>
             )}
 
+            <ConfirmModal 
+                {...confirmModal} 
+                onClose={() => setConfirmModal({ ...confirmModal, isOpen: false })} 
+            />
 
         </div>
     );

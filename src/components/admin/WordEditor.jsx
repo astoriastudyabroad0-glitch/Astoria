@@ -19,10 +19,10 @@ import {
     List, ListOrdered, Link as LinkIcon, Image as ImageIcon, 
     Eraser, ChevronDown, Plus, Minus, Highlighter, Baseline,
     Subscript as SubscriptIcon, Superscript as SuperscriptIcon,
-    Outdent, Indent, Type as CaseIcon
+    Outdent, Indent, Type as CaseIcon, Video
 } from 'lucide-react';
 
-import { Extension } from '@tiptap/core';
+import { Extension, Node } from '@tiptap/core';
 
 const FontSize = Extension.create({
   name: 'fontSize',
@@ -64,6 +64,32 @@ const FontSize = Extension.create({
   }
 });
 
+const Iframe = Node.create({
+  name: 'iframe',
+  group: 'block',
+  atom: true,
+  addAttributes() {
+    return {
+      src: { default: null },
+      width: { default: '100%' },
+      height: { default: '500' },
+      frameborder: { default: '0' },
+      allowfullscreen: { default: 'true' },
+      allow: { default: 'autoplay; clipboard-write; encrypted-media; picture-in-picture; web-share' },
+      style: { default: 'border:none;overflow:hidden' },
+      scrolling: { default: 'no' }
+    }
+  },
+  parseHTML() {
+    return [{ tag: 'iframe' }]
+  },
+  renderHTML({ HTMLAttributes }) {
+    return ['div', { class: 'fb-video-wrapper', style: 'display: flex; flex-direction: column; align-items: center; margin: 20px 0;' }, 
+      ['iframe', HTMLAttributes]
+    ]
+  },
+});
+
 const editorExtensions = [
     StarterKit.configure({
         heading: { levels: [1, 2, 3, 4] },
@@ -76,8 +102,9 @@ const editorExtensions = [
         },
     }),
     Image.configure({
+        inline: true,
         HTMLAttributes: {
-            class: 'max-w-full h-auto mx-auto my-4',
+            class: 'max-w-full h-auto',
         },
     }),
     TextStyle,
@@ -94,6 +121,7 @@ const editorExtensions = [
     Placeholder.configure({
         placeholder: 'Write your story here...',
     }),
+    Iframe,
 ];
 
 const WordEditor = ({ content, onChange }) => {
@@ -102,6 +130,8 @@ const WordEditor = ({ content, onChange }) => {
     const [linkText, setLinkText] = useState('');
     const [isImageDialogOpen, setIsImageDialogOpen] = useState(false);
     const [imageUrl, setImageUrl] = useState('');
+    const [isFbDialogOpen, setIsFbDialogOpen] = useState(false);
+    const [fbUrl, setFbUrl] = useState('');
     const [showColorPicker, setShowColorPicker] = useState(false);
     const [showHighlightPicker, setShowHighlightPicker] = useState(false);
 
@@ -112,6 +142,33 @@ const WordEditor = ({ content, onChange }) => {
             onChange(editor.getHTML());
         },
         editorProps: {
+            transformPastedHTML(html) {
+                try {
+                    const parser = new DOMParser();
+                    const doc = parser.parseFromString(html, 'text/html');
+                    
+                    const images = doc.querySelectorAll('img');
+                    images.forEach(img => {
+                        // Replace likely Facebook emojis with their alt text
+                        if (img.alt && (img.src.includes('fbcdn') || img.src.includes('emoji') || img.className.includes('emoji') || img.alt.length <= 4)) {
+                            const textNode = doc.createTextNode(img.alt);
+                            img.parentNode.replaceChild(textNode, img);
+                        }
+                    });
+                    
+                    // Also clean up empty divs that Facebook injects which cause huge gaps
+                    const divs = doc.querySelectorAll('div');
+                    divs.forEach(div => {
+                        if (!div.textContent.trim() && !div.querySelector('img')) {
+                            div.parentNode.removeChild(div);
+                        }
+                    });
+                    
+                    return doc.body.innerHTML;
+                } catch (e) {
+                    return html;
+                }
+            },
             attributes: {
                 class: 'prose prose-lg max-w-none focus:outline-none min-h-[500px] p-[40px_48px] bg-white mx-auto shadow-[0_1px_3px_rgba(0,0,0,0.2)] w-full max-w-[816px] font-[Calibri,sans-serif] text-[12pt] leading-[1.5] text-black',
             },
@@ -139,6 +196,36 @@ const WordEditor = ({ content, onChange }) => {
         }
         setIsImageDialogOpen(false);
         setImageUrl('');
+    };
+
+    const addFbVideo = () => {
+        if (fbUrl) {
+            let embedUrl = fbUrl;
+            let width = '560';
+            let height = '315';
+
+            // Check if it is a Reel to adjust to vertical 9:16 aspect ratio
+            if (fbUrl.includes('/reel/') || fbUrl.includes('/reels/')) {
+                width = '315';
+                height = '560';
+            }
+
+            // Convert to plugin embed URL if not already
+            if (fbUrl.includes('facebook.com') && !fbUrl.includes('plugins/video.php')) {
+                embedUrl = `https://www.facebook.com/plugins/video.php?href=${encodeURIComponent(fbUrl)}&show_text=false&width=${width}`;
+            }
+
+            editor.chain().focus().insertContent({
+                type: 'iframe',
+                attrs: {
+                    src: embedUrl,
+                    width: width,
+                    height: height
+                }
+            }).run();
+        }
+        setIsFbDialogOpen(false);
+        setFbUrl('');
     };
 
     const colors = [
@@ -346,6 +433,10 @@ const WordEditor = ({ content, onChange }) => {
                     <ToolbarButton onClick={() => setIsImageDialogOpen(true)} title="Insert Image">
                         <ImageIcon size={14} />
                     </ToolbarButton>
+
+                    <ToolbarButton onClick={() => setIsFbDialogOpen(true)} title="Embed Facebook Video">
+                        <Video size={14} className="text-blue-600" />
+                    </ToolbarButton>
                 </div>
             </div>
 
@@ -428,6 +519,35 @@ const WordEditor = ({ content, onChange }) => {
                             <div className="flex justify-end gap-2 pt-4">
                                 <button type="button" onClick={() => setIsImageDialogOpen(false)} className="px-4 py-2 text-xs font-bold text-gray-400 hover:bg-gray-50 rounded-lg">Cancel</button>
                                 <button type="button" onClick={() => addImage(imageUrl)} className="px-6 py-2 text-xs font-bold bg-blue-600 text-white rounded-lg shadow-lg hover:bg-blue-700 transition-all">Insert URL</button>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            )}
+
+            {isFbDialogOpen && (
+                <div className="fixed inset-0 z-[100] flex items-center justify-center bg-black/20 backdrop-blur-sm">
+                    <div className="bg-white p-6 rounded-xl shadow-2xl border border-gray-200 w-[400px]">
+                        <h3 className="text-sm font-black uppercase mb-4 text-gray-700 flex items-center">
+                            <Video className="w-4 h-4 mr-2 text-blue-600" />
+                            Embed Facebook Video
+                        </h3>
+                        <div className="space-y-4">
+                            <div>
+                                <label className="text-[10px] font-black text-gray-400 uppercase tracking-widest">Facebook Video Post URL</label>
+                                <input 
+                                    type="text" 
+                                    className="w-full border-b-2 border-gray-100 py-2 outline-none focus:border-blue-500 text-sm"
+                                    value={fbUrl}
+                                    onChange={(e) => setFbUrl(e.target.value)}
+                                    placeholder="https://www.facebook.com/page/videos/12345/"
+                                    autoFocus
+                                />
+                                <p className="text-[10px] text-gray-400 mt-2">Paste the URL of the Facebook video post. It will automatically embed and create a 'Watch on Facebook' button.</p>
+                            </div>
+                            <div className="flex justify-end gap-2 pt-4">
+                                <button type="button" onClick={() => setIsFbDialogOpen(false)} className="px-4 py-2 text-xs font-bold text-gray-400 hover:bg-gray-50 rounded-lg">Cancel</button>
+                                <button type="button" onClick={addFbVideo} className="px-6 py-2 text-xs font-bold bg-blue-600 text-white rounded-lg shadow-lg hover:bg-blue-700 transition-all">Embed Video</button>
                             </div>
                         </div>
                     </div>
