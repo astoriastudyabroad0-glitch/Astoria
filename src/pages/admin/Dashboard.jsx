@@ -74,9 +74,16 @@ const Dashboard = () => {
     const handleAddLabel = (e) => {
         e.preventDefault();
         if (currentLabel.trim()) {
+            const newLabels = currentLabel
+                .split(/[\s,#]+/)
+                .map(l => l.trim())
+                .filter(Boolean);
+
             const currentLabels = formData.labels ? formData.labels.split(',').map(l => l.trim()).filter(Boolean) : [];
-            if (!currentLabels.includes(currentLabel.trim())) {
-                setFormData({ ...formData, labels: [...currentLabels, currentLabel.trim()].join(', ') });
+            const uniqueNewLabels = newLabels.filter(nl => !currentLabels.includes(nl));
+
+            if (uniqueNewLabels.length > 0) {
+                setFormData({ ...formData, labels: [...currentLabels, ...uniqueNewLabels].join(', ') });
             }
             setCurrentLabel('');
         }
@@ -439,8 +446,8 @@ const Dashboard = () => {
                                             </div>
                                         </div>
                                     </div>
-                                    <div className="grid grid-cols-2 gap-4">
-                                        <div>
+                                    <div className="grid md:grid-cols-2 gap-4">
+                                        <div className="md:col-span-1">
                                             <label className="block text-xs font-bold text-gray-400 uppercase tracking-widest mb-3">Date</label>
                                             <input
                                                 type="date"
@@ -449,45 +456,50 @@ const Dashboard = () => {
                                                 className="w-full bg-gray-50 border border-gray-100 px-4 py-3 rounded-xl text-sm outline-none focus:ring-2 focus:ring-primary-red"
                                             />
                                         </div>
-                                        <div>
-                                            <label className="block text-xs font-bold text-gray-400 uppercase tracking-widest mb-3">Meta Labels</label>
-                                            <div className="bg-gray-50 border border-gray-100 p-2 rounded-xl focus-within:ring-2 focus-within:ring-primary-red transition-all">
-                                                <div className="flex flex-wrap gap-2 mb-2">
-                                                    {formData.labels && formData.labels.split(',').filter(Boolean).map((label, i) => (
-                                                        <span key={i} className="inline-flex items-center px-3 py-1 rounded-full bg-white border border-gray-200 text-secondary-blue text-xs font-bold shadow-sm group">
-                                                            {label.trim()}
-                                                            <button 
-                                                                type="button" 
-                                                                onClick={() => handleRemoveLabel(label.trim())}
-                                                                className="ml-2 text-gray-400 hover:text-primary-red focus:outline-none"
-                                                            >
-                                                                <X className="w-3 h-3" />
-                                                            </button>
-                                                        </span>
-                                                    ))}
-                                                </div>
-                                                <div className="flex items-center mt-1">
-                                                    <input
-                                                        type="text"
-                                                        value={currentLabel}
-                                                        onChange={(e) => setCurrentLabel(e.target.value)}
-                                                        onKeyDown={(e) => {
-                                                            if (e.key === 'Enter') {
-                                                                e.preventDefault();
-                                                                handleAddLabel(e);
-                                                            }
-                                                        }}
-                                                        placeholder="Add label..."
-                                                        className="flex-grow bg-transparent text-sm outline-none px-2"
-                                                    />
-                                                    <button 
-                                                        type="button"
-                                                        onClick={handleAddLabel}
-                                                        className="p-1.5 rounded-lg bg-primary-red text-white hover:bg-red-600 transition-colors shadow-sm focus:outline-none"
-                                                    >
-                                                        <Plus className="w-4 h-4" />
-                                                    </button>
-                                                </div>
+                                    </div>
+                                    <div>
+                                        <label className="block text-xs font-bold text-gray-400 uppercase tracking-widest mb-3">Meta Labels</label>
+                                        <div className="bg-gray-50 border border-gray-100 p-2 rounded-xl focus-within:ring-2 focus-within:ring-primary-red transition-all">
+                                            <div className="flex flex-wrap gap-2 mb-2">
+                                                {formData.labels && formData.labels.split(',').filter(Boolean).map((label, i) => (
+                                                    <span key={i} className="inline-flex items-center px-3 py-1 rounded-full bg-white border border-gray-200 text-secondary-blue text-xs font-bold shadow-sm group">
+                                                        {label.trim()}
+                                                        <button 
+                                                            type="button" 
+                                                            onClick={() => handleRemoveLabel(label.trim())}
+                                                            className="ml-2 text-gray-400 hover:text-primary-red focus:outline-none"
+                                                        >
+                                                            <X className="w-3 h-3" />
+                                                        </button>
+                                                    </span>
+                                                ))}
+                                            </div>
+                                            <div className="flex items-center mt-1">
+                                                <input
+                                                    type="text"
+                                                    value={currentLabel}
+                                                    onChange={(e) => setCurrentLabel(e.target.value)}
+                                                    onKeyDown={(e) => {
+                                                        if (e.key === 'Enter') {
+                                                            e.preventDefault();
+                                                            handleAddLabel(e);
+                                                        }
+                                                    }}
+                                                    onPaste={(e) => {
+                                                        setTimeout(() => {
+                                                            handleAddLabel({ preventDefault: () => {} });
+                                                        }, 10);
+                                                    }}
+                                                    placeholder="Paste multiple tags here (#tag1 #tag2) or type and press Enter..."
+                                                    className="flex-grow bg-transparent text-sm outline-none px-2 py-1"
+                                                />
+                                                <button 
+                                                    type="button"
+                                                    onClick={handleAddLabel}
+                                                    className="p-1.5 rounded-lg bg-primary-red text-white hover:bg-red-600 transition-colors shadow-sm focus:outline-none flex-shrink-0"
+                                                >
+                                                    <Plus className="w-4 h-4" />
+                                                </button>
                                             </div>
                                         </div>
                                     </div>
